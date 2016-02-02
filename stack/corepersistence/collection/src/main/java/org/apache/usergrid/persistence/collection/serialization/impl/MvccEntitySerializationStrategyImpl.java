@@ -75,7 +75,8 @@ import rx.schedulers.Schedulers;
 /**
  * @author tnine
  */
-public abstract class MvccEntitySerializationStrategyImpl implements MvccEntitySerializationStrategy {
+public abstract class
+MvccEntitySerializationStrategyImpl implements MvccEntitySerializationStrategy {
 
     private static final Logger log = LoggerFactory.getLogger( MvccLogEntrySerializationStrategyImpl.class );
 
@@ -200,7 +201,7 @@ public abstract class MvccEntitySerializationStrategyImpl implements MvccEntityS
                             final List<ScopedRowKey<CollectionPrefixedKey<Id>>> scopedRowKeys ) {
 
                             try {
-                                return keyspace.prepareQuery( columnFamily ).getKeySlice( rowKeys )
+                                return keyspace.prepareQuery( columnFamily ).getKeySlice( scopedRowKeys )
                                                               .withColumnRange( maxVersion, null, false,
                                                                       1 ).execute().getResult();
                             }
