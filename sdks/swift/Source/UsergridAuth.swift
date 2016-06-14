@@ -45,7 +45,7 @@ public class UsergridAuth : NSObject, NSCoding {
     public var accessToken : String?
 
     /// The expires at date, if this `UsergridAuth` was authorized successfully and their was a expires in time stamp within the token response.
-    public var expiry : NSDate?
+    public var expiry : Date?
 
     /// Determines if an access token exists.
     public var hasToken: Bool { return self.accessToken != nil }
@@ -91,7 +91,7 @@ public class UsergridAuth : NSObject, NSCoding {
 
      - returns: A new instance of `UsergridAuth`
      */
-    public init(accessToken:String, expiry:NSDate? = nil) {
+    public init(accessToken:String, expiry:Date? = nil) {
         self.usingToken = true
         self.accessToken = accessToken
         self.expiry = expiry
@@ -107,8 +107,8 @@ public class UsergridAuth : NSObject, NSCoding {
     - returns: A decoded `UsergridAuth` object.
     */
     required public init?(coder aDecoder: NSCoder) {
-        self.accessToken = aDecoder.decodeObjectForKey("accessToken") as? String
-        self.expiry = aDecoder.decodeObjectForKey("expiry") as? NSDate
+        self.accessToken = aDecoder.decodeObject(forKey: "accessToken") as? String
+        self.expiry = aDecoder.decodeObject(forKey: "expiry") as? Date
     }
 
     /**
@@ -116,12 +116,12 @@ public class UsergridAuth : NSObject, NSCoding {
 
      - parameter aCoder: The encoder.
      */
-    public func encodeWithCoder(aCoder: NSCoder) {
+    public func encode(with aCoder: NSCoder) {
         if let accessToken = self.accessToken {
-            aCoder.encodeObject(accessToken, forKey: "accessToken")
+            aCoder.encode(accessToken, forKey: "accessToken")
         }
         if let expiresAt = self.expiry {
-            aCoder.encodeObject(expiresAt, forKey: "expiry")
+            aCoder.encode(expiresAt, forKey: "expiry")
         }
     }
 
@@ -180,8 +180,8 @@ public class UsergridUserAuth : UsergridAuth {
     - returns: A decoded `UsergridUserAuth` object.
     */
     required public init?(coder aDecoder: NSCoder) {
-        guard let username = aDecoder.decodeObjectForKey("username") as? String,
-                  password = aDecoder.decodeObjectForKey("password") as? String
+        guard let username = aDecoder.decodeObject(forKey: "username") as? String,
+                  password = aDecoder.decodeObject(forKey: "password") as? String
         else {
             self.username = ""
             self.password = ""
@@ -199,10 +199,10 @@ public class UsergridUserAuth : UsergridAuth {
 
      - parameter aCoder: The encoder.
      */
-    override public func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(self.username, forKey: "username")
-        aCoder.encodeObject(self.password, forKey: "password")
-        super.encodeWithCoder(aCoder)
+    override public func encode(with aCoder: NSCoder) {
+        aCoder.encode(self.username, forKey: "username")
+        aCoder.encode(self.password, forKey: "password")
+        super.encode(with: aCoder)
     }
 }
 
@@ -250,8 +250,8 @@ public class UsergridAppAuth : UsergridAuth {
     - returns: A decoded `UsergridAppAuth` object.
     */
     required public init?(coder aDecoder: NSCoder) {
-        guard let clientId = aDecoder.decodeObjectForKey("clientId") as? String,
-              let clientSecret = aDecoder.decodeObjectForKey("clientSecret") as? String
+        guard let clientId = aDecoder.decodeObject(forKey: "clientId") as? String,
+              let clientSecret = aDecoder.decodeObject(forKey: "clientSecret") as? String
         else {
             self.clientId = ""
             self.clientSecret = ""
@@ -268,9 +268,9 @@ public class UsergridAppAuth : UsergridAuth {
 
      - parameter aCoder: The encoder.
      */
-    override public func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(self.clientId, forKey: "clientId")
-        aCoder.encodeObject(self.clientSecret, forKey: "clientSecret")
-        super.encodeWithCoder(aCoder)
+    override public func encode(with aCoder: NSCoder) {
+        aCoder.encode(self.clientId, forKey: "clientId")
+        aCoder.encode(self.clientSecret, forKey: "clientSecret")
+        super.encode(with: aCoder)
     }
 }

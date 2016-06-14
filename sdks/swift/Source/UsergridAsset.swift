@@ -55,7 +55,7 @@ public class UsergridAsset: NSObject, NSCoding {
     public let filename: String
 
     /// Binary representation of the asset's data.
-    public let data: NSData
+    public let data: Data
 
     /// A representation of the folder location the asset was loaded from, if it was provided in the initialization.
     public let originalLocation: String?
@@ -64,7 +64,7 @@ public class UsergridAsset: NSObject, NSCoding {
     public var contentType: String
 
     ///  The content length of the assets data.
-    public var contentLength: Int { return self.data.length }
+    public var contentLength: Int { return self.data.count }
     
     // MARK: - Initialization -
 
@@ -78,7 +78,7 @@ public class UsergridAsset: NSObject, NSCoding {
 
     - returns: A new instance of `UsergridAsset`.
     */
-    public init(filename:String? = UsergridAsset.DEFAULT_FILE_NAME, data:NSData, originalLocation:String? = nil, contentType:String) {
+    public init(filename:String? = UsergridAsset.DEFAULT_FILE_NAME, data:Data, originalLocation:String? = nil, contentType:String) {
         self.filename = filename ?? UsergridAsset.DEFAULT_FILE_NAME
         self.data = data
         self.originalLocation = originalLocation
@@ -95,18 +95,18 @@ public class UsergridAsset: NSObject, NSCoding {
 
     - returns: A new instance of `UsergridAsset` if the data can be gathered from the passed in `UIImage`, otherwise nil.
     */
-    public convenience init?(filename:String? = UsergridAsset.DEFAULT_FILE_NAME, image:UIImage, imageContentType:UsergridImageContentType = .Png) {
-        var imageData: NSData?
+    public convenience init?(filename:String? = UsergridAsset.DEFAULT_FILE_NAME, image:UIImage, imageContentType:UsergridImageContentType = .png) {
+        var imageData: Data?
         switch(imageContentType) {
-            case .Png :
+            case .png :
                 imageData = UIImagePNGRepresentation(image)
-            case .Jpeg :
+            case .jpeg :
                 imageData = UIImageJPEGRepresentation(image, 1.0)
         }
         if let assetData = imageData {
             self.init(filename:filename,data:assetData,contentType:imageContentType.stringValue)
         } else {
-            self.init(filename:"",data:NSData(),contentType:"")
+            self.init(filename:"",data:Data(),contentType:"")
             return nil
         }
     }
@@ -121,8 +121,8 @@ public class UsergridAsset: NSObject, NSCoding {
 
     - returns: A new instance of `UsergridAsset` if the data can be gathered from the passed in `NSURL`, otherwise nil.
     */
-    public convenience init?(filename:String? = UsergridAsset.DEFAULT_FILE_NAME, fileURL:NSURL, contentType:String? = nil) {
-        if fileURL.fileURL, let assetData = NSData(contentsOfURL: fileURL) {
+    public convenience init?(filename:String? = UsergridAsset.DEFAULT_FILE_NAME, fileURL:URL, contentType:String? = nil) {
+        if fileURL.isFileURL, let assetData = try? Data(contentsOf: fileURL) {
             var fileNameToUse = filename
             if fileNameToUse != UsergridAsset.DEFAULT_FILE_NAME, let inferredFileName = fileURL.lastPathComponent {
                 fileNameToUse = inferredFileName
@@ -131,12 +131,12 @@ public class UsergridAsset: NSObject, NSCoding {
                 self.init(filename:fileNameToUse,data:assetData,originalLocation:fileURL.absoluteString,contentType:fileContentType)
             } else {
                 print("Usergrid Error: Failed to imply content type of the asset.")
-                self.init(filename:"",data:NSData(),contentType:"")
+                self.init(filename:"",data:Data(),contentType:"")
                 return nil
             }
         } else {
             print("Usergrid Error: fileURL parameter must be a file URL.")
-            self.init(filename:"",data:NSData(),contentType:"")
+            self.init(filename:"",data:Data(),contentType:"")
             return nil
         }
     }
@@ -151,21 +151,21 @@ public class UsergridAsset: NSObject, NSCoding {
     - returns: A decoded `UsergridUser` object.
     */
     required public init?(coder aDecoder: NSCoder) {
-        guard   let filename = aDecoder.decodeObjectForKey("filename") as? String,
-                let assetData = aDecoder.decodeObjectForKey("data") as? NSData,
-                let contentType = aDecoder.decodeObjectForKey("contentType") as? String
+        guard   let filename = aDecoder.decodeObject(forKey: "filename") as? String,
+                let assetData = aDecoder.decodeObject(forKey: "data") as? Data,
+                let contentType = aDecoder.decodeObject(forKey: "contentType") as? String
         else {
             self.filename = ""
             self.contentType = ""
             self.originalLocation = nil
-            self.data = NSData()
+            self.data = Data()
             super.init()
             return nil
         }
         self.filename = filename
         self.data = assetData
         self.contentType = contentType
-        self.originalLocation = aDecoder.decodeObjectForKey("originalLocation") as? String
+        self.originalLocation = aDecoder.decodeObject(forKey: "originalLocation") as? String
         super.init()
     }
 
@@ -174,14 +174,14 @@ public class UsergridAsset: NSObject, NSCoding {
 
      - parameter aCoder: The encoder.
      */
-    public func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(self.filename, forKey: "filename")
-        aCoder.encodeObject(self.data, forKey: "data")
-        aCoder.encodeObject(self.contentType, forKey: "contentType")
-        aCoder.encodeObject(self.originalLocation, forKey: "originalLocation")
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(self.filename, forKey: "filename")
+        aCoder.encode(self.data, forKey: "data")
+        aCoder.encode(self.contentType, forKey: "contentType")
+        aCoder.encode(self.originalLocation, forKey: "originalLocation")
     }
 
-    private static func MIMEType(fileURL: NSURL) -> String? {
+    private static func MIMEType(_ fileURL: URL) -> String? {
         if let pathExtension = fileURL.pathExtension {
             if let UTIRef = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, pathExtension, nil) {
                 let UTI = UTIRef.takeUnretainedValue()

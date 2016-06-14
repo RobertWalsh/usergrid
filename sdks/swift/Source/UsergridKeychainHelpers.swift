@@ -53,9 +53,9 @@ internal extension UsergridDevice {
     static func createNewDeviceKeychainUUID() -> String {
 
         #if os(watchOS) || os(OSX)
-            let usergridUUID = NSUUID().UUIDString
+            let usergridUUID = NSUUID().uuidString
         #elseif os(iOS) || os(tvOS)
-            let usergridUUID = UIDevice.currentDevice().identifierForVendor?.UUIDString ?? NSUUID().UUIDString
+            let usergridUUID = UIDevice.current().identifierForVendor?.uuidString ?? UUID().uuidString
         #endif
 
         return usergridUUID
@@ -63,7 +63,7 @@ internal extension UsergridDevice {
 
     private static func createNewSharedDevice() -> UsergridDevice {
         var deviceEntityDict = UsergridDevice.commonDevicePropertyDict()
-        deviceEntityDict[UsergridEntityProperties.UUID.stringValue] = UsergridDevice.createNewDeviceKeychainUUID()
+        deviceEntityDict[UsergridEntityProperties.uuid.stringValue] = UsergridDevice.createNewDeviceKeychainUUID()
         let sharedDevice = UsergridDevice(type: UsergridDevice.DEVICE_ENTITY_TYPE, name: nil, propertyDict: deviceEntityDict)
         return sharedDevice
     }
@@ -76,8 +76,8 @@ internal extension UsergridDevice {
         let status = withUnsafeMutablePointer(&result) { SecItemCopyMatching(queryAttributes, UnsafeMutablePointer($0)) }
         if status == errSecSuccess {
             if let resultDictionary = result as? NSDictionary {
-                if let resultData = resultDictionary[kSecValueData as String] as? NSData {
-                    if let sharedDevice = NSKeyedUnarchiver.unarchiveObjectWithData(resultData) as? UsergridDevice {
+                if let resultData = resultDictionary[kSecValueData as String] as? Data {
+                    if let sharedDevice = NSKeyedUnarchiver.unarchiveObject(with: resultData) as? UsergridDevice {
                         return sharedDevice
                     } else {
                         UsergridDevice.deleteSharedDeviceKeychainItem()
@@ -92,12 +92,12 @@ internal extension UsergridDevice {
     }
 
 
-    static func saveSharedDeviceKeychainItem(device:UsergridDevice) {
+    static func saveSharedDeviceKeychainItem(_ device:UsergridDevice) {
         var queryAttributes = UsergridDevice.deviceKeychainItem()
         queryAttributes[kSecReturnData as String] = kCFBooleanTrue as Bool
         queryAttributes[kSecReturnAttributes as String] = kCFBooleanTrue as Bool
 
-        let sharedDeviceData = NSKeyedArchiver.archivedDataWithRootObject(device);
+        let sharedDeviceData = NSKeyedArchiver.archivedData(withRootObject: device);
 
         if SecItemCopyMatching(queryAttributes,nil) == errSecSuccess // Do we need to update keychain item or add a new one.
         {
@@ -133,13 +133,13 @@ internal extension UsergridDevice {
 
 internal extension UsergridUser {
 
-    static func userKeychainItem(client:UsergridClient) -> [String:AnyObject] {
+    static func userKeychainItem(_ client:UsergridClient) -> [String:AnyObject] {
         var keychainItem = usergridGenericKeychainItem()
         keychainItem[kSecAttrService as String] = USERGRID_CURRENT_USER_KEYCHAIN_SERVICE + "." + client.appId + "." + client.orgId
         return keychainItem
     }
 
-    static func getCurrentUserFromKeychain(client:UsergridClient) -> UsergridUser? {
+    static func getCurrentUserFromKeychain(_ client:UsergridClient) -> UsergridUser? {
         var queryAttributes = UsergridUser.userKeychainItem(client)
         queryAttributes[kSecReturnData as String] = kCFBooleanTrue as Bool
         queryAttributes[kSecReturnAttributes as String] = kCFBooleanTrue as Bool
@@ -148,8 +148,8 @@ internal extension UsergridUser {
         let status = withUnsafeMutablePointer(&result) { SecItemCopyMatching(queryAttributes, UnsafeMutablePointer($0)) }
         if status == errSecSuccess {
             if let resultDictionary = result as? NSDictionary {
-                if let resultData = resultDictionary[kSecValueData as String] as? NSData {
-                    if let currentUser = NSKeyedUnarchiver.unarchiveObjectWithData(resultData) as? UsergridUser {
+                if let resultData = resultDictionary[kSecValueData as String] as? Data {
+                    if let currentUser = NSKeyedUnarchiver.unarchiveObject(with: resultData) as? UsergridUser {
                         return currentUser
                     }
                 }
@@ -158,14 +158,14 @@ internal extension UsergridUser {
         return nil
     }
 
-    static func saveCurrentUserKeychainItem(client:UsergridClient, currentUser:UsergridUser) {
+    static func saveCurrentUserKeychainItem(_ client:UsergridClient, currentUser:UsergridUser) {
         var queryAttributes = UsergridUser.userKeychainItem(client)
         queryAttributes[kSecReturnData as String] = kCFBooleanTrue as Bool
         queryAttributes[kSecReturnAttributes as String] = kCFBooleanTrue as Bool
 
         if SecItemCopyMatching(queryAttributes,nil) == errSecSuccess // Do we need to update keychain item or add a new one.
         {
-            let attributesToUpdate = [kSecValueData as String:NSKeyedArchiver.archivedDataWithRootObject(currentUser)]
+            let attributesToUpdate = [kSecValueData as String:NSKeyedArchiver.archivedData(withRootObject: currentUser)]
             let updateStatus = SecItemUpdate(UsergridUser.userKeychainItem(client), attributesToUpdate)
             if updateStatus != errSecSuccess {
                 print("Error updating current user data to keychain!")
@@ -174,7 +174,7 @@ internal extension UsergridUser {
         else
         {
             var keychainItem = UsergridUser.userKeychainItem(client)
-            keychainItem[kSecValueData as String] = NSKeyedArchiver.archivedDataWithRootObject(currentUser)
+            keychainItem[kSecValueData as String] = NSKeyedArchiver.archivedData(withRootObject: currentUser)
             let status = SecItemAdd(keychainItem, nil)
             if status != errSecSuccess {
                 print("Error adding current user data to keychain!")
@@ -182,7 +182,7 @@ internal extension UsergridUser {
         }
     }
 
-    static func deleteCurrentUserKeychainItem(client:UsergridClient) {
+    static func deleteCurrentUserKeychainItem(_ client:UsergridClient) {
         var queryAttributes = UsergridUser.userKeychainItem(client)
         queryAttributes[kSecReturnData as String] = kCFBooleanFalse as Bool
         queryAttributes[kSecReturnAttributes as String] = kCFBooleanFalse as Bool

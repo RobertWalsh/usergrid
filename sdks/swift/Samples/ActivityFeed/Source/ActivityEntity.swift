@@ -53,8 +53,8 @@ public class ActivityEntity: UsergridEntity {
         super.init(coder: aDecoder)
     }
 
-    public override func encodeWithCoder(aCoder: NSCoder) {
-        super.encodeWithCoder(aCoder)
+    public override func encode(with aCoder: NSCoder) {
+        super.encode(with:aCoder)
     }
     
 }

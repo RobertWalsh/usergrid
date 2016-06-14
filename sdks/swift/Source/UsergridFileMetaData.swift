@@ -51,7 +51,7 @@ public class UsergridFileMetaData : NSObject,NSCoding {
     public let lastModifiedTimeStamp: Int
 
     /// The `NSDate` object corresponding to the last modified time stamp.
-    public let lastModifiedDate: NSDate?
+    public let lastModifiedDate: Date?
 
     // MARK: - Initialization -
 
@@ -70,7 +70,7 @@ public class UsergridFileMetaData : NSObject,NSCoding {
         self.lastModifiedTimeStamp = fileMetaDataJSON["last-modified"] as? Int ?? 0
 
         if self.lastModifiedTimeStamp > 0 {
-            self.lastModifiedDate = NSDate(milliseconds: self.lastModifiedTimeStamp.description)
+            self.lastModifiedDate = Date(milliseconds: self.lastModifiedTimeStamp.description)
         } else {
             self.lastModifiedDate = nil
         }
@@ -86,14 +86,14 @@ public class UsergridFileMetaData : NSObject,NSCoding {
     - returns: A decoded `UsergridUser` object.
     */
     required public init?(coder aDecoder: NSCoder) {
-        self.eTag = aDecoder.decodeObjectForKey("etag") as? String
-        self.checkSum = aDecoder.decodeObjectForKey("checksum") as? String
-        self.contentType = aDecoder.decodeObjectForKey("content-type") as? String
-        self.contentLength = aDecoder.decodeIntegerForKey("content-length") ?? 0
-        self.lastModifiedTimeStamp = aDecoder.decodeIntegerForKey("last-modified") ?? 0
+        self.eTag = aDecoder.decodeObject(forKey: "etag") as? String
+        self.checkSum = aDecoder.decodeObject(forKey: "checksum") as? String
+        self.contentType = aDecoder.decodeObject(forKey: "content-type") as? String
+        self.contentLength = aDecoder.decodeInteger(forKey: "content-length") ?? 0
+        self.lastModifiedTimeStamp = aDecoder.decodeInteger(forKey: "last-modified") ?? 0
 
         if self.lastModifiedTimeStamp > 0 {
-            self.lastModifiedDate = NSDate(milliseconds: self.lastModifiedTimeStamp.description)
+            self.lastModifiedDate = Date(milliseconds: self.lastModifiedTimeStamp.description)
         } else {
             self.lastModifiedDate = nil
         }
@@ -104,11 +104,11 @@ public class UsergridFileMetaData : NSObject,NSCoding {
 
      - parameter aCoder: The encoder.
      */
-    public func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(self.eTag, forKey: "etag")
-        aCoder.encodeObject(self.checkSum, forKey: "checksum")
-        aCoder.encodeObject(self.contentType, forKey: "content-type")
-        aCoder.encodeInteger(self.contentLength, forKey: "content-length")
-        aCoder.encodeInteger(self.lastModifiedTimeStamp, forKey: "last-modified")
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(self.eTag, forKey: "etag")
+        aCoder.encode(self.checkSum, forKey: "checksum")
+        aCoder.encode(self.contentType, forKey: "content-type")
+        aCoder.encode(self.contentLength, forKey: "content-length")
+        aCoder.encode(self.lastModifiedTimeStamp, forKey: "last-modified")
     }
 }

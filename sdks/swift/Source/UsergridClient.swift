@@ -143,7 +143,7 @@ public class UsergridClient: NSObject, NSCoding {
     - returns: A decoded `UsergridClient` object.
     */
     public required init?(coder aDecoder: NSCoder) {
-        guard let config = aDecoder.decodeObjectForKey("config") as? UsergridClientConfig
+        guard let config = aDecoder.decodeObject(forKey: "config") as? UsergridClientConfig
         else {
             self.config = UsergridClientConfig(orgId: "", appId: "")
             super.init()
@@ -153,7 +153,7 @@ public class UsergridClient: NSObject, NSCoding {
         self.config = config
         super.init()
 
-        if let currentUser = aDecoder.decodeObjectForKey("currentUser") as? UsergridUser {
+        if let currentUser = aDecoder.decodeObject(forKey: "currentUser") as? UsergridUser {
             self.currentUser = currentUser
         } else {
             if persistCurrentUserInKeychain {
@@ -168,9 +168,9 @@ public class UsergridClient: NSObject, NSCoding {
 
      - parameter aCoder: The encoder.
      */
-    public func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(self.config, forKey: "config")
-        aCoder.encodeObject(self.currentUser, forKey: "currentUser")
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(self.config, forKey: "config")
+        aCoder.encode(self.currentUser, forKey: "currentUser")
     }
 
     // MARK: - Device Registration/Push Notifications -
@@ -182,7 +182,7 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter notifierID: The Usergrid notifier ID.
     - parameter completion: The completion block.
     */
-    public func applyPushToken(pushToken: NSData, notifierID: String, completion: UsergridResponseCompletion? = nil) {
+    public func applyPushToken(_ pushToken: Data, notifierID: String, completion: UsergridResponseCompletion? = nil) {
         self.applyPushToken(UsergridDevice.sharedDevice, pushToken: pushToken, notifierID: notifierID, completion: completion)
     }
 
@@ -194,7 +194,7 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter notifierID: The Usergrid notifier ID.
     - parameter completion: The completion block.
     */
-    public func applyPushToken(device: UsergridDevice, pushToken: NSData, notifierID: String, completion: UsergridResponseCompletion? = nil) {
+    public func applyPushToken(_ device: UsergridDevice, pushToken: Data, notifierID: String, completion: UsergridResponseCompletion? = nil) {
         device.applyPushToken(pushToken, notifierID: notifierID)
         self.PUT("devices", jsonBody: device.jsonObjectValue) { (response) in
             if let responseEntity = response.entity {
@@ -226,17 +226,17 @@ public class UsergridClient: NSObject, NSCoding {
             self.tempAuth = nil
         } else {
             switch(self.authMode) {
-                case .User:
+                case .user:
                     if let userAuth = self.userAuth where userAuth.isValid {
                         usergridAuth = userAuth
                     }
                     break
-                case .App:
+                case .app:
                     if let appAuth = self.appAuth where appAuth.isValid {
                         usergridAuth = appAuth
                     }
                     break
-                case .None:
+                case .none:
                     usergridAuth = nil
                     break
             }
@@ -253,7 +253,7 @@ public class UsergridClient: NSObject, NSCoding {
 
      - returns: `Self`
      */
-    public func usingAuth(auth:UsergridAuth) -> Self {
+    public func usingAuth(_ auth:UsergridAuth) -> Self {
         self.tempAuth = auth
         return self
     }
@@ -267,7 +267,7 @@ public class UsergridClient: NSObject, NSCoding {
 
      - returns: `Self`
      */
-    public func usingToken(token:String) -> Self {
+    public func usingToken(_ token:String) -> Self {
         self.tempAuth = UsergridAuth(accessToken: token)
         return self
     }
@@ -277,7 +277,7 @@ public class UsergridClient: NSObject, NSCoding {
 
     - parameter completion: The completion block that will be called after authentication has completed.
     */
-    public func authenticateApp(completion: UsergridAppAuthCompletionBlock? = nil) {
+    public func authenticateApp(_ completion: UsergridAppAuthCompletionBlock? = nil) {
         guard let appAuth = self.appAuth
         else {
             let error = UsergridResponseError(errorName: "Invalid UsergridAppAuth.", errorDescription: "UsergridClient's appAuth is nil.")
@@ -293,8 +293,8 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter auth:       The `UsergridAppAuth` that will be authenticated.
     - parameter completion: The completion block that will be called after authentication has completed.
     */
-    public func authenticateApp(appAuth: UsergridAppAuth, completion: UsergridAppAuthCompletionBlock? = nil) {
-        let request = UsergridRequest(method: .Post,
+    public func authenticateApp(_ appAuth: UsergridAppAuth, completion: UsergridAppAuthCompletionBlock? = nil) {
+        let request = UsergridRequest(method: .post,
                                       baseUrl: self.clientAppURL,
                                       paths: ["token"],
                                       auth: self.authForRequests(),
@@ -312,7 +312,7 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter auth:       The `UsergridUserAuth` that will be authenticated.
     - parameter completion: The completion block that will be called after authentication has completed.
     */
-    public func authenticateUser(userAuth: UsergridUserAuth, completion: UsergridUserAuthCompletionBlock? = nil) {
+    public func authenticateUser(_ userAuth: UsergridUserAuth, completion: UsergridUserAuthCompletionBlock? = nil) {
         self.authenticateUser(userAuth, setAsCurrentUser:true, completion:completion)
     }
 
@@ -323,8 +323,8 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter setAsCurrentUser:   If the authenticated user should be set as the `UsergridClient.currentUser`.
     - parameter completion:         The completion block that will be called after authentication has completed.
     */
-    public func authenticateUser(userAuth: UsergridUserAuth, setAsCurrentUser: Bool, completion: UsergridUserAuthCompletionBlock? = nil) {
-        let request = UsergridRequest(method: .Post,
+    public func authenticateUser(_ userAuth: UsergridUserAuth, setAsCurrentUser: Bool, completion: UsergridUserAuthCompletionBlock? = nil) {
+        let request = UsergridRequest(method: .post,
                                       baseUrl: self.clientAppURL,
                                       paths: ["token"],
                                       auth: self.authForRequests(),
@@ -345,14 +345,14 @@ public class UsergridClient: NSObject, NSCoding {
      - parameter new:        The new password.
      - parameter completion: The optional completion block.
      */
-    public func resetPassword(user: UsergridUser, old:String, new:String, completion:UsergridUserResetPasswordCompletion? = nil) {
+    public func resetPassword(_ user: UsergridUser, old:String, new:String, completion:UsergridUserResetPasswordCompletion? = nil) {
         guard let usernameOrEmail = user.usernameOrEmail
         else {
             completion?(error: UsergridResponseError(errorName: "Error resetting password.", errorDescription: "The UsergridUser object must contain a valid username or email to reset the password."), didSucceed: false)
             return
         }
 
-        let request = UsergridRequest(method: .Put,
+        let request = UsergridRequest(method: .put,
                                       baseUrl: self.clientAppURL,
                                       paths: ["users",usernameOrEmail,"password"],
                                       auth: self.authForRequests(),
@@ -368,7 +368,7 @@ public class UsergridClient: NSObject, NSCoding {
 
     - parameter completion: The completion block that will be called after logout has completed.
     */
-    public func logoutCurrentUser(completion:UsergridResponseCompletion? = nil) {
+    public func logoutCurrentUser(_ completion:UsergridResponseCompletion? = nil) {
         guard let uuidOrUsername = self.currentUser?.uuidOrUsername,
               let token = self.currentUser?.auth?.accessToken
         else {
@@ -384,7 +384,7 @@ public class UsergridClient: NSObject, NSCoding {
 
     - parameter completion: The completion block that will be called after logout has completed.
     */
-    public func logoutUserAllTokens(uuidOrUsername:String, completion:UsergridResponseCompletion? = nil) {
+    public func logoutUserAllTokens(_ uuidOrUsername:String, completion:UsergridResponseCompletion? = nil) {
         self.logoutUser(uuidOrUsername, token: nil, completion: completion)
     }
 
@@ -395,7 +395,7 @@ public class UsergridClient: NSObject, NSCoding {
 
     - parameter completion: The completion block that will be called after logout has completed.
     */
-    public func logoutUser(uuidOrUsername:String, token:String?, completion:UsergridResponseCompletion? = nil) {
+    public func logoutUser(_ uuidOrUsername:String, token:String?, completion:UsergridResponseCompletion? = nil) {
         var paths = ["users",uuidOrUsername]
         var queryParams: [String: String]?
         if let accessToken = token {
@@ -404,7 +404,7 @@ public class UsergridClient: NSObject, NSCoding {
         } else {
             paths.append("revoketokens")
         }
-        let request = UsergridRequest(method: .Put,
+        let request = UsergridRequest(method: .put,
                                       baseUrl: self.clientAppURL,
                                       paths: paths,
                                       auth: self.authForRequests(),
@@ -431,7 +431,7 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter request:    The `UsergridRequest` object to send.
     - parameter completion: The optional completion block that will be called once the request has completed.
     */
-    public func sendRequest(request:UsergridRequest, completion:UsergridResponseCompletion? = nil) {
+    public func sendRequest(_ request:UsergridRequest, completion:UsergridResponseCompletion? = nil) {
         _requestManager.performRequest(request, completion: completion)
     }
 
@@ -444,8 +444,8 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter uuidOrName: The UUID or name of the `UsergridEntity`.
     - parameter completion: The optional completion block that will be called once the request has completed.
     */
-    public func GET(type: String, uuidOrName: String, completion: UsergridResponseCompletion? = nil) {
-        let request = UsergridRequest(method: .Get, baseUrl: self.clientAppURL, paths: [type,uuidOrName], auth:self.authForRequests())
+    public func GET(_ type: String, uuidOrName: String, completion: UsergridResponseCompletion? = nil) {
+        let request = UsergridRequest(method: .get, baseUrl: self.clientAppURL, paths: [type,uuidOrName], auth:self.authForRequests())
         self.sendRequest(request, completion: completion)
     }
 
@@ -455,8 +455,8 @@ public class UsergridClient: NSObject, NSCoding {
      - parameter type:       The `UsergridEntity` type.
      - parameter completion: The optional completion block that will be called once the request has completed.
      */
-    public func GET(type: String, completion: UsergridResponseCompletion? = nil) {
-        let request = UsergridRequest(method: .Get, baseUrl: self.clientAppURL, paths: [type], query: nil, auth: self.authForRequests())
+    public func GET(_ type: String, completion: UsergridResponseCompletion? = nil) {
+        let request = UsergridRequest(method: .get, baseUrl: self.clientAppURL, paths: [type], query: nil, auth: self.authForRequests())
         self.sendRequest(request, completion: completion)
     }
 
@@ -466,14 +466,14 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter query:           The query to use when gathering `UsergridEntity` objects.
     - parameter queryCompletion: The optional completion block that will be called once the request has completed.
     */
-    public func GET(query: UsergridQuery, queryCompletion: UsergridResponseCompletion? = nil) {
+    public func GET(_ query: UsergridQuery, queryCompletion: UsergridResponseCompletion? = nil) {
         guard let type = query.collectionName
             else {
                 queryCompletion?(response: UsergridResponse(client:self, errorName: "Query collection name missing.", errorDescription: "Query collection name is missing."))
                 return
         }
 
-        let request = UsergridRequest(method: .Get, baseUrl: self.clientAppURL, paths: [type], query: query, auth: self.authForRequests())
+        let request = UsergridRequest(method: .get, baseUrl: self.clientAppURL, paths: [type], query: query, auth: self.authForRequests())
         self.sendRequest(request, completion: queryCompletion)
     }
 
@@ -487,12 +487,12 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter jsonBody:   The valid JSON body dictionary to update the `UsergridEntity` with.
     - parameter completion: The optional completion block that will be called once the request has completed.
     */
-    public func PUT(type: String, uuidOrName: String, jsonBody:[String:AnyObject], completion: UsergridResponseCompletion? = nil) {
-        let request = UsergridRequest(method: .Put,
+    public func PUT(_ type: String, uuidOrName: String, jsonBody:[String:AnyObject], completion: UsergridResponseCompletion? = nil) {
+        let request = UsergridRequest(method: .put,
                                       baseUrl: self.clientAppURL,
                                       paths: [type,uuidOrName],
                                       auth: self.authForRequests(),
-                                      headers: UsergridRequest.JSON_CONTENT_TYPE_HEADER,
+                                      headers: UsergridRequest.jsonHeaderContentType(),
                                       jsonBody: jsonBody)
         self.sendRequest(request, completion: completion)
     }
@@ -503,7 +503,7 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter entity:     The `UsergridEntity` to update.
     - parameter completion: The optional completion block that will be called once the request has completed.
     */
-    public func PUT(entity: UsergridEntity, completion: UsergridResponseCompletion? = nil) {
+    public func PUT(_ entity: UsergridEntity, completion: UsergridResponseCompletion? = nil) {
         PUT(entity.type, jsonBody: entity.jsonObjectValue, completion: completion)
     }
 
@@ -516,17 +516,17 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter jsonBody:   The valid JSON body dictionary to update the `UsergridEntity` with.
     - parameter completion: The optional completion block that will be called once the request has completed.
     */
-    public func PUT(type: String, jsonBody:[String:AnyObject], completion: UsergridResponseCompletion? = nil) {
-        guard let uuidOrName = (jsonBody[UsergridEntityProperties.UUID.stringValue] ?? jsonBody[UsergridEntityProperties.Name.stringValue]) as? String
+    public func PUT(_ type: String, jsonBody:[String:AnyObject], completion: UsergridResponseCompletion? = nil) {
+        guard let uuidOrName = (jsonBody[UsergridEntityProperties.uuid.stringValue] ?? jsonBody[UsergridEntityProperties.name.stringValue]) as? String
         else {
             completion?(response: UsergridResponse(client:self, errorName: "jsonBody not valid.", errorDescription: "The `jsonBody` must contain a valid value for either `uuid` or `name`."))
             return
         }
-        let request = UsergridRequest(method: .Put,
+        let request = UsergridRequest(method: .put,
                                       baseUrl: self.clientAppURL,
                                       paths: [type,uuidOrName],
                                       auth: self.authForRequests(),
-                                      headers: UsergridRequest.JSON_CONTENT_TYPE_HEADER,
+                                      headers: UsergridRequest.jsonHeaderContentType(),
                                       jsonBody: jsonBody)
         self.sendRequest(request, completion: completion)
     }
@@ -540,18 +540,18 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter jsonBody:        The valid JSON body dictionary to update with.
     - parameter queryCompletion: The optional completion block that will be called once the request has completed.
     */
-    public func PUT(query: UsergridQuery, jsonBody:[String:AnyObject], queryCompletion: UsergridResponseCompletion? = nil) {
+    public func PUT(_ query: UsergridQuery, jsonBody:[String:AnyObject], queryCompletion: UsergridResponseCompletion? = nil) {
         guard let type = query.collectionName
         else {
             queryCompletion?(response: UsergridResponse(client:self, errorName: "Query collection name invalid.", errorDescription: "Query is missing a collection name."))
             return
         }
-        let request = UsergridRequest(method: .Put,
+        let request = UsergridRequest(method: .put,
                                       baseUrl: self.clientAppURL,
                                       paths: [type],
                                       query: query,
                                       auth: self.authForRequests(),
-                                      headers: UsergridRequest.JSON_CONTENT_TYPE_HEADER,
+                                      headers: UsergridRequest.jsonHeaderContentType(),
                                       jsonBody: jsonBody)
         self.sendRequest(request, completion: queryCompletion)
     }
@@ -563,12 +563,12 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter entity:     The `UsergridEntity` to create.
     - parameter completion: The optional completion block that will be called once the request has completed.
     */
-    public func POST(entity:UsergridEntity, completion: UsergridResponseCompletion? = nil) {
-        let request = UsergridRequest(method: .Post,
+    public func POST(_ entity:UsergridEntity, completion: UsergridResponseCompletion? = nil) {
+        let request = UsergridRequest(method: .post,
                                       baseUrl: self.clientAppURL,
                                       paths: [entity.type],
                                       auth: self.authForRequests(),
-                                      headers: UsergridRequest.JSON_CONTENT_TYPE_HEADER,
+                                      headers: UsergridRequest.jsonHeaderContentType(),
                                       jsonBody: entity.jsonObjectValue)
         self.sendRequest(request, completion: completion)
     }
@@ -581,7 +581,7 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter entities:           The `UsergridEntity` objects to create.
     - parameter entitiesCompletion: The optional completion block that will be called once the request has completed.
     */
-    public func POST(entities:[UsergridEntity], entitiesCompletion: UsergridResponseCompletion? = nil) {
+    public func POST(_ entities:[UsergridEntity], entitiesCompletion: UsergridResponseCompletion? = nil) {
         guard let type = entities.first?.type
         else {
             entitiesCompletion?(response: UsergridResponse(client:self, errorName: "No type found.", errorDescription: "The first entity in the array had no type found."))
@@ -597,12 +597,12 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter jsonBody:   The valid JSON body dictionary to use when creating the `UsergridEntity`.
     - parameter completion: The optional completion block that will be called once the request has completed.
     */
-    public func POST(type: String, jsonBody:[String:AnyObject], completion: UsergridResponseCompletion? = nil) {
-        let request = UsergridRequest(method: .Post,
+    public func POST(_ type: String, jsonBody:[String:AnyObject], completion: UsergridResponseCompletion? = nil) {
+        let request = UsergridRequest(method: .post,
                                       baseUrl: self.clientAppURL,
                                       paths: [type],
                                       auth: self.authForRequests(),
-                                      headers: UsergridRequest.JSON_CONTENT_TYPE_HEADER,
+                                      headers: UsergridRequest.jsonHeaderContentType(),
                                       jsonBody: jsonBody)
         self.sendRequest(request, completion: completion)
     }
@@ -614,12 +614,12 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter jsonBody:   The valid JSON body dictionaries to use when creating the `UsergridEntity` objects.
     - parameter completion: The optional completion block that will be called once the request has completed.
     */
-    public func POST(type: String, jsonBodies:[[String:AnyObject]], completion: UsergridResponseCompletion? = nil) {
-        let request = UsergridRequest(method: .Post,
+    public func POST(_ type: String, jsonBodies:[[String:AnyObject]], completion: UsergridResponseCompletion? = nil) {
+        let request = UsergridRequest(method: .post,
                                       baseUrl: self.clientAppURL,
                                       paths: [type],
                                       auth: self.authForRequests(),
-                                      headers: UsergridRequest.JSON_CONTENT_TYPE_HEADER,
+                                      headers: UsergridRequest.jsonHeaderContentType(),
                                       jsonBody: jsonBodies)
         self.sendRequest(request, completion: completion)
     }
@@ -632,14 +632,14 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter jsonBody:   The valid JSON body dictionary to use when creating the `UsergridEntity`.
     - parameter completion: The optional completion block that will be called once the request has completed.
     */
-    public func POST(type: String, name: String, jsonBody:[String:AnyObject], completion: UsergridResponseCompletion? = nil) {
+    public func POST(_ type: String, name: String, jsonBody:[String:AnyObject], completion: UsergridResponseCompletion? = nil) {
         var jsonBodyWithName = jsonBody
-        jsonBodyWithName[UsergridEntityProperties.Name.stringValue] = name
-        let request = UsergridRequest(method: .Post,
+        jsonBodyWithName[UsergridEntityProperties.name.stringValue] = name
+        let request = UsergridRequest(method: .post,
                                       baseUrl: self.clientAppURL,
                                       paths: [type],
                                       auth: self.authForRequests(),
-                                      headers: UsergridRequest.JSON_CONTENT_TYPE_HEADER,
+                                      headers: UsergridRequest.jsonHeaderContentType(),
                                       jsonBody: jsonBodyWithName)
         self.sendRequest(request, completion: completion)
 
@@ -655,7 +655,7 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter entity:     The `UsergridEntity` to delete.
     - parameter completion: The optional completion block that will be called once the request has completed.
     */
-    public func DELETE(entity:UsergridEntity, completion: UsergridResponseCompletion? = nil) {
+    public func DELETE(_ entity:UsergridEntity, completion: UsergridResponseCompletion? = nil) {
         guard let uuidOrName = entity.uuidOrName
         else {
             completion?(response: UsergridResponse(client:self, errorName: "No UUID or name found.", errorDescription: "The entity object must have a `uuid` or `name` assigned."))
@@ -673,19 +673,19 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter query:              The query to use when filtering what entities to delete.
     - parameter queryCompletion:    The optional completion block that will be called once the request has completed.
     */
-    public func DELETE(query:UsergridQuery, queryCompletion: UsergridResponseCompletion? = nil) {
+    public func DELETE(_ query:UsergridQuery, queryCompletion: UsergridResponseCompletion? = nil) {
         guard let type = query.collectionName
         else {
             queryCompletion?(response: UsergridResponse(client:self, errorName: "Query collection name invalid.", errorDescription: "Query is missing a collection name."))
             return
         }
 
-        let request = UsergridRequest(method: .Delete,
+        let request = UsergridRequest(method: .delete,
                                       baseUrl: self.clientAppURL,
                                       paths: [type],
                                       query: query,
                                       auth: self.authForRequests(),
-                                      headers: UsergridRequest.JSON_CONTENT_TYPE_HEADER)
+                                      headers: UsergridRequest.jsonHeaderContentType())
         self.sendRequest(request, completion: queryCompletion)
     }
 
@@ -696,12 +696,12 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter uuidOrName: The UUID or name of the `UsergridEntity`.
     - parameter completion: The optional completion block that will be called once the request has completed.
     */
-    public func DELETE(type:String, uuidOrName: String, completion: UsergridResponseCompletion? = nil) {
-        let request = UsergridRequest(method: .Delete,
+    public func DELETE(_ type:String, uuidOrName: String, completion: UsergridResponseCompletion? = nil) {
+        let request = UsergridRequest(method: .delete,
                                       baseUrl: self.clientAppURL,
                                       paths: [type,uuidOrName],
                                       auth: self.authForRequests(),
-                                      headers: UsergridRequest.JSON_CONTENT_TYPE_HEADER)
+                                      headers: UsergridRequest.jsonHeaderContentType())
         self.sendRequest(request, completion: completion)
     }
 
@@ -715,7 +715,7 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter to:                 The `UsergridEntity` which is connected.
     - parameter completion:         The optional completion block that will be called once the request has completed.
     */
-    public func connect(entity:UsergridEntity, relationship:String, to:UsergridEntity, completion: UsergridResponseCompletion? = nil) {
+    public func connect(_ entity:UsergridEntity, relationship:String, to:UsergridEntity, completion: UsergridResponseCompletion? = nil) {
         guard let entityID = entity.uuidOrName,
               let toID = to.uuidOrName
         else {
@@ -735,7 +735,7 @@ public class UsergridClient: NSObject, NSCoding {
      - parameter toName:           The name of the entity you are connecting to.
      - parameter completion:       The optional completion block that will be called once the request has completed.
      */
-    public func connect(entityType:String, entityID:String, relationship:String, toType:String, toName: String, completion: UsergridResponseCompletion? = nil) {
+    public func connect(_ entityType:String, entityID:String, relationship:String, toType:String, toName: String, completion: UsergridResponseCompletion? = nil) {
         self.connect(entityType, entityID: entityID, relationship: relationship, toType: toType, toID: toName, completion: completion)
     }
 
@@ -749,14 +749,14 @@ public class UsergridClient: NSObject, NSCoding {
      - parameter toID:             The UUID of the entity you are connecting to.
      - parameter completion:       The optional completion block that will be called once the request has completed.
      */
-    public func connect(entityType:String, entityID:String, relationship:String, toType:String?, toID: String, completion: UsergridResponseCompletion? = nil) {
+    public func connect(_ entityType:String, entityID:String, relationship:String, toType:String?, toID: String, completion: UsergridResponseCompletion? = nil) {
         var paths = [entityType,entityID,relationship]
         if let toType = toType {
             paths.append(toType)
         }
         paths.append(toID)
 
-        let request = UsergridRequest(method: .Post,
+        let request = UsergridRequest(method: .post,
                                       baseUrl: self.clientAppURL,
                                       paths: paths,
                                       auth: self.authForRequests())
@@ -771,7 +771,7 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter from:               The `UsergridEntity` which is connected.
     - parameter completion:         The optional completion block that will be called once the request has completed.
     */
-    public func disconnect(entity:UsergridEntity, relationship:String, from:UsergridEntity, completion: UsergridResponseCompletion? = nil) {
+    public func disconnect(_ entity:UsergridEntity, relationship:String, from:UsergridEntity, completion: UsergridResponseCompletion? = nil) {
         guard let entityID = entity.uuidOrName,
               let fromID = from.uuidOrName
         else {
@@ -792,7 +792,7 @@ public class UsergridClient: NSObject, NSCoding {
      - parameter fromName:         The name of the entity you are disconnecting from.
      - parameter completion:       The optional completion block that will be called once the request has completed.
      */
-    public func disconnect(entityType:String, entityID:String, relationship:String, fromType:String, fromName: String, completion: UsergridResponseCompletion? = nil) {
+    public func disconnect(_ entityType:String, entityID:String, relationship:String, fromType:String, fromName: String, completion: UsergridResponseCompletion? = nil) {
         self.disconnect(entityType, entityID: entityID, relationship: relationship, fromType: fromType, fromID: fromName, completion: completion)
     }
 
@@ -806,7 +806,7 @@ public class UsergridClient: NSObject, NSCoding {
      - parameter toID:             The UUID of the entity you are disconnecting from.
      - parameter completion:       The optional completion block that will be called once the request has completed.
      */
-    public func disconnect(entityType:String, entityID:String, relationship:String, fromType:String?, fromID: String, completion: UsergridResponseCompletion? = nil) {
+    public func disconnect(_ entityType:String, entityID:String, relationship:String, fromType:String?, fromID: String, completion: UsergridResponseCompletion? = nil) {
 
         var paths = [entityType,entityID,relationship]
         if let fromType = fromType {
@@ -814,7 +814,7 @@ public class UsergridClient: NSObject, NSCoding {
         }
         paths.append(fromID)
 
-        let request = UsergridRequest(method: .Delete,
+        let request = UsergridRequest(method: .delete,
                                       baseUrl: self.clientAppURL,
                                       paths: paths,
                                       auth: self.authForRequests())
@@ -829,7 +829,7 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter query:        The optional query.
     - parameter completion:   The optional completion block that will be called once the request has completed.
     */
-    public func getConnections(direction:UsergridDirection, entity:UsergridEntity, relationship:String, query:UsergridQuery? = nil, completion:UsergridResponseCompletion? = nil) {
+    public func getConnections(_ direction:UsergridDirection, entity:UsergridEntity, relationship:String, query:UsergridQuery? = nil, completion:UsergridResponseCompletion? = nil) {
         guard let uuidOrName = entity.uuidOrName
         else {
             completion?(response: UsergridResponse(client: self, errorName: "Invalid Entity Get Connections Attempt.", errorDescription: "The entity must have a `uuid` or `name` assigned."))
@@ -848,8 +848,8 @@ public class UsergridClient: NSObject, NSCoding {
      - parameter query:            The optional query.
      - parameter completion:       The optional completion block that will be called once the request has completed.
      */
-    public func getConnections(direction:UsergridDirection, type:String, uuidOrName:String, relationship:String, query:UsergridQuery? = nil, completion:UsergridResponseCompletion? = nil) {
-        let request = UsergridRequest(method: .Get,
+    public func getConnections(_ direction:UsergridDirection, type:String, uuidOrName:String, relationship:String, query:UsergridQuery? = nil, completion:UsergridResponseCompletion? = nil) {
+        let request = UsergridRequest(method: .get,
                                       baseUrl: self.clientAppURL,
                                       paths: [type, uuidOrName, direction.connectionValue, relationship],
                                       query: query,
@@ -866,8 +866,8 @@ public class UsergridClient: NSObject, NSCoding {
      - parameter query:        The optional query.
      - parameter completion:   The optional completion block that will be called once the request has completed.
      */
-    public func getConnections(direction:UsergridDirection, uuid:String, relationship:String, query:UsergridQuery? = nil, completion:UsergridResponseCompletion? = nil) {
-        let request = UsergridRequest(method: .Get,
+    public func getConnections(_ direction:UsergridDirection, uuid:String, relationship:String, query:UsergridQuery? = nil, completion:UsergridResponseCompletion? = nil) {
+        let request = UsergridRequest(method: .get,
             baseUrl: self.clientAppURL,
             paths: [uuid, direction.connectionValue, relationship],
             query: query,
@@ -885,7 +885,7 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter progress:   The optional progress block that will be called to update the progress of the upload.
     - parameter completion: The optional completion block that will be called once the request has completed.
     */
-    public func uploadAsset(entity:UsergridEntity, asset:UsergridAsset, progress:UsergridAssetRequestProgress? = nil, completion:UsergridAssetUploadCompletion? = nil) {
+    public func uploadAsset(_ entity:UsergridEntity, asset:UsergridAsset, progress:UsergridAssetRequestProgress? = nil, completion:UsergridAssetUploadCompletion? = nil) {
         let assetRequest = UsergridAssetUploadRequest(baseUrl: self.clientAppURL,
                                                       paths: [entity.type,entity.uuidOrName!],
                                                       auth: self.authForRequests(),
@@ -910,14 +910,14 @@ public class UsergridClient: NSObject, NSCoding {
     - parameter progress:       The optional progress block that will be called to update the progress of the download.
     - parameter completion:     The optional completion block that will be called once the request has completed.
     */
-    public func downloadAsset(entity:UsergridEntity, contentType:String, progress:UsergridAssetRequestProgress? = nil, completion:UsergridAssetDownloadCompletion? = nil) {
+    public func downloadAsset(_ entity:UsergridEntity, contentType:String, progress:UsergridAssetRequestProgress? = nil, completion:UsergridAssetDownloadCompletion? = nil) {
         guard entity.hasAsset
         else {
             completion?(asset: nil, error: UsergridResponseError(errorName: "Download asset failed.", errorDescription: "Entity does not have an asset attached."))
             return
         }
 
-        let downloadAssetRequest = UsergridRequest(method: .Get,
+        let downloadAssetRequest = UsergridRequest(method: .get,
                                                    baseUrl: self.clientAppURL,
                                                    paths: [entity.type,entity.uuidOrName!],
                                                    auth: self.authForRequests(),

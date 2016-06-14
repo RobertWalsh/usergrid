@@ -97,7 +97,7 @@ public class UsergridResponse: NSObject {
     /// The string value.
     public var stringValue : String {
         if let responseJSON = self.responseJSON {
-            return NSString(data: try! NSJSONSerialization.dataWithJSONObject(responseJSON, options: .PrettyPrinted), encoding: NSUTF8StringEncoding) as? String ?? ""
+            return NSString(data: try! JSONSerialization.data(withJSONObject: responseJSON, options: .prettyPrinted), encoding: String.Encoding.utf8.rawValue) as? String ?? ""
         } else {
             return error?.description ?? ""
         }
@@ -142,7 +142,7 @@ public class UsergridResponse: NSObject {
 
     - returns: A new instance of `UsergridResponse`.
     */
-    public init(client:UsergridClient?, data:NSData?, response:NSHTTPURLResponse?, error:NSError?, query:UsergridQuery? = nil) {
+    public init(client:UsergridClient?, data:Data?, response:HTTPURLResponse?, error:NSError?, query:UsergridQuery? = nil) {
         self.client = client
         self.statusCode = response?.statusCode
         self.headers = response?.allHeaderFields as? [String:String]
@@ -157,7 +157,7 @@ public class UsergridResponse: NSObject {
 
         if let jsonData = data {
             do {
-                let dataAsJSON = try NSJSONSerialization.JSONObjectWithData(jsonData, options: NSJSONReadingOptions.MutableContainers)
+                let dataAsJSON = try JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.mutableContainers)
                 if let jsonDict = dataAsJSON as? [String:AnyObject] {
                     self.responseJSON = jsonDict
                     if let responseError = UsergridResponseError(jsonDictionary: jsonDict) {
@@ -186,7 +186,7 @@ public class UsergridResponse: NSObject {
 
     - parameter completion: The completion block that is called once the request for the next page has finished.
     */
-    public func loadNextPage(completion: UsergridResponseCompletion) {
+    public func loadNextPage(_ completion: UsergridResponseCompletion) {
         if self.hasNextPage, let type = (self.responseJSON?["path"] as? NSString)?.lastPathComponent {
             if let query = self.query?.copy() as? UsergridQuery {
                 self.client?.GET(query.cursor(self.cursor), queryCompletion:completion)
