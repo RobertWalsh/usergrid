@@ -202,14 +202,15 @@ public class UsergridAssetUploadRequest: UsergridRequest {
     public var multiPartHTTPBody: Data {
         let httpBodyString = UsergridAssetUploadRequest.MULTIPART_START +
             "\(UsergridAssetUploadRequest.CONTENT_DISPOSITION):\(UsergridAssetUploadRequest.FORM_DATA); name=file; filename=\(self.asset.filename)\r\n" +
-            "\(UsergridRequest.CONTENT_TYPE): \(self.asset.contentType)\r\n\r\n" as NSString
+            "\(UsergridRequest.CONTENT_TYPE): \(self.asset.contentType)\r\n\r\n"
 
-        let httpBody = NSMutableData()
-        httpBody.append(httpBodyString.data(using: String.Encoding.utf8.rawValue)!)
-        httpBody.append(self.asset.data as Data)
-        httpBody.append(UsergridAssetUploadRequest.MULTIPART_END.data(using: String.Encoding.utf8.rawValue)!)
 
-        return httpBody as Data
+        var httpBody = Data()
+        httpBody.append(httpBodyString.data(using: String.Encoding.utf8)!)
+        httpBody.append(self.asset.data)
+        httpBody.append(UsergridAssetUploadRequest.MULTIPART_END.data(using: String.Encoding.utf8)!)
+
+        return httpBody
     }
 
     // MARK: - Initialization -
@@ -242,6 +243,6 @@ public class UsergridAssetUploadRequest: UsergridRequest {
     private static let ASSET_UPLOAD_CONTENT_HEADER = "multipart/form-data; boundary=\(UsergridAssetUploadRequest.ASSET_UPLOAD_BOUNDARY)"
     private static let CONTENT_DISPOSITION = "Content-Disposition"
     private static let MULTIPART_START = "--\(UsergridAssetUploadRequest.ASSET_UPLOAD_BOUNDARY)\r\n"
-    private static let MULTIPART_END = "\r\n--\(UsergridAssetUploadRequest.ASSET_UPLOAD_BOUNDARY)--\r\n" as NSString
+    private static let MULTIPART_END = "\r\n--\(UsergridAssetUploadRequest.ASSET_UPLOAD_BOUNDARY)--\r\n"
     private static let FORM_DATA = "form-data"
 }

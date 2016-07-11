@@ -61,7 +61,7 @@ An enumeration that is used to determine what the `UsergridClient` will use for 
     // MARK: - Values -
 
     /// Corresponds to the property 'type'
-    case entityType
+    case type
     /// Corresponds to the property 'uuid'
     case uuid
     /// Corresponds to the property 'name'
@@ -84,7 +84,7 @@ An enumeration that is used to determine what the `UsergridClient` will use for 
     */
     public static func fromString(_ stringValue: String) -> UsergridEntityProperties? {
         switch stringValue.lowercased() {
-            case ENTITY_TYPE: return .entityType
+            case ENTITY_TYPE: return .type
             case ENTITY_UUID: return .uuid
             case ENTITY_NAME: return .name
             case ENTITY_CREATED: return .created
@@ -97,7 +97,7 @@ An enumeration that is used to determine what the `UsergridClient` will use for 
     /// Returns the string value.
     public var stringValue: String {
         switch self {
-            case .entityType: return ENTITY_TYPE
+            case .type: return ENTITY_TYPE
             case .uuid: return ENTITY_UUID
             case .name: return ENTITY_NAME
             case .created: return ENTITY_CREATED
@@ -115,7 +115,7 @@ An enumeration that is used to determine what the `UsergridClient` will use for 
     */
     public func isMutableForEntity(_ entity:UsergridEntity) -> Bool {
         switch self {
-            case .entityType,.uuid,.created,.modified: return false
+            case .type,.uuid,.created,.modified: return false
             case .location: return true
             case .name: return entity.isUser
         }

@@ -87,7 +87,7 @@ class ASSET_Tests: XCTestCase {
         }
 
         Usergrid.GET(ASSET_Tests.collectionName, uuidOrName:ASSET_Tests.entityUUID) { (response) in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
 
             let entity = response.first!
             XCTAssertNotNil(entity)
@@ -103,7 +103,7 @@ class ASSET_Tests: XCTestCase {
             XCTAssertNotNil(asset)
 
             entity.uploadAsset(asset!, progress:uploadProgress) { uploadedAsset,response in
-                XCTAssertTrue(Thread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertTrue(response.ok)
                 XCTAssertNil(response.error)
 
@@ -122,7 +122,7 @@ class ASSET_Tests: XCTestCase {
 
                 entity.downloadAsset(UsergridImageContentType.png.stringValue, progress:downloadProgress)
                 { (downloadedAsset, error) -> Void in
-                    XCTAssertTrue(Thread.isMainThread())
+                    XCTAssertTrue(Thread.isMainThread)
                     XCTAssertNotNil(downloadedAsset)
                     XCTAssertNil(error)
                     let downloadedImage = UIImage(data: downloadedAsset!.data)
@@ -137,7 +137,7 @@ class ASSET_Tests: XCTestCase {
 
     func deleteUser(_ user:UsergridUser,expectation:XCTestExpectation) {
         user.remove() { removeResponse in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(removeResponse)
             XCTAssertTrue(removeResponse.ok)
             XCTAssertNotNil(removeResponse.user)
@@ -160,12 +160,12 @@ class ASSET_Tests: XCTestCase {
 
         UsergridUser.checkAvailable(user.email, username: user.username) { error,available in
 
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNil(error)
             XCTAssertTrue(available)
 
             user.create() { (createResponse) in
-                XCTAssertTrue(Thread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(createResponse)
                 XCTAssertTrue(createResponse.ok)
                 XCTAssertNotNil(createResponse.user)
@@ -173,14 +173,14 @@ class ASSET_Tests: XCTestCase {
                 XCTAssertNotNil(user.uuid)
 
                 user.login(user.username!, password:User_Tests.password) { (auth, loggedInUser, error) -> Void in
-                    XCTAssertTrue(Thread.isMainThread())
+                    XCTAssertTrue(Thread.isMainThread)
                     XCTAssertNil(error)
                     XCTAssertNotNil(auth)
                     XCTAssertNotNil(loggedInUser)
                     XCTAssertEqual(auth, user.auth!)
 
                     Usergrid.authenticateUser(user.auth!) { auth,currentUser,error in
-                        XCTAssertTrue(Thread.isMainThread())
+                        XCTAssertTrue(Thread.isMainThread)
                         XCTAssertNil(error)
                         XCTAssertNotNil(auth)
                         XCTAssertEqual(auth, user.auth!)
@@ -199,7 +199,7 @@ class ASSET_Tests: XCTestCase {
                         XCTAssertNotNil(asset)
 
                         Usergrid.currentUser!.uploadAsset(asset!, progress:uploadProgress) { uploadedAsset,response in
-                            XCTAssertTrue(Thread.isMainThread())
+                            XCTAssertTrue(Thread.isMainThread)
                             XCTAssertTrue(response.ok)
                             XCTAssertNil(response.error)
 
@@ -218,7 +218,7 @@ class ASSET_Tests: XCTestCase {
 
                             Usergrid.currentUser!.downloadAsset(UsergridImageContentType.png.stringValue, progress:downloadProgress)
                                 { (downloadedAsset, error) -> Void in
-                                    XCTAssertTrue(Thread.isMainThread())
+                                    XCTAssertTrue(Thread.isMainThread)
                                     XCTAssertNotNil(downloadedAsset)
                                     XCTAssertNil(error)
                                     let downloadedImage = UIImage(data: downloadedAsset!.data)

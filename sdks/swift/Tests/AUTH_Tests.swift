@@ -52,7 +52,7 @@ class AUTH_Tests: XCTestCase {
         let authExpect = self.expectation(withDescription: "\(#function)")
         Usergrid.authMode = .app
         Usergrid.authenticateApp(appAuth) { auth,error in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNil(error)
             XCTAssertNotNil(Usergrid.appAuth)
 
@@ -63,7 +63,7 @@ class AUTH_Tests: XCTestCase {
                 XCTAssertNotNil(appAuth.isValid)
 
                 Usergrid.GET(AUTH_Tests.collectionName) { (response) in
-                    XCTAssertTrue(Thread.isMainThread())
+                    XCTAssertTrue(Thread.isMainThread)
                     XCTAssertNotNil(response)
                     XCTAssertTrue(response.hasNextPage)
                     XCTAssertEqual(response.entities!.count, 10)

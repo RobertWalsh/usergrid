@@ -55,22 +55,22 @@ public class UsergridEntity: NSObject, NSCoding {
     /// The `UsergridFileMetaData` of this `UsergridEntity`.
     internal(set) public var fileMetaData : UsergridFileMetaData?
 
-    /// Property helper method for the `UsergridEntity` objects `UsergridEntityProperties.EntityType`.
-    public var type: String { return self.getEntitySpecificProperty(.entityType) as! String }
+    /// Property helper method for the `UsergridEntity` objects `UsergridEntityProperties.type`.
+    public var type: String { return self.getEntitySpecificProperty(.type) as! String }
 
-    /// Property helper method for the `UsergridEntity` objects `UsergridEntityProperties.UUID`.
+    /// Property helper method for the `UsergridEntity` objects `UsergridEntityProperties.uuid`.
     public var uuid: String? { return self.getEntitySpecificProperty(.uuid) as? String }
 
-    /// Property helper method for the `UsergridEntity` objects `UsergridEntityProperties.Name`.
+    /// Property helper method for the `UsergridEntity` objects `UsergridEntityProperties.name`.
     public var name: String? { return self.getEntitySpecificProperty(.name) as? String }
 
-    /// Property helper method for the `UsergridEntity` objects `UsergridEntityProperties.Created`.
+    /// Property helper method for the `UsergridEntity` objects `UsergridEntityProperties.created`.
     public var created: Date? { return self.getEntitySpecificProperty(.created) as? Date }
 
-    /// Property helper method for the `UsergridEntity` objects `UsergridEntityProperties.Modified`.
+    /// Property helper method for the `UsergridEntity` objects `UsergridEntityProperties.modified`.
     public var modified: Date? { return self.getEntitySpecificProperty(.modified) as? Date }
 
-    /// Property helper method for the `UsergridEntity` objects `UsergridEntityProperties.Location`.
+    /// Property helper method for the `UsergridEntity` objects `UsergridEntityProperties.location`.
     public var location: CLLocation? {
         get { return self.getEntitySpecificProperty(.location) as? CLLocation }
         set(newLocation) { self[UsergridEntityProperties.location.stringValue] = newLocation }
@@ -117,11 +117,11 @@ public class UsergridEntity: NSObject, NSCoding {
         super.init()
 
         if self is UsergridUser {
-            self.properties[UsergridEntityProperties.entityType.stringValue] = UsergridUser.USER_ENTITY_TYPE
+            self.properties[UsergridEntityProperties.type.stringValue] = UsergridUser.USER_ENTITY_TYPE
         } else if self is UsergridDevice {
-            self.properties[UsergridEntityProperties.entityType.stringValue] = UsergridDevice.DEVICE_ENTITY_TYPE
+            self.properties[UsergridEntityProperties.type.stringValue] = UsergridDevice.DEVICE_ENTITY_TYPE
         } else {
-            self.properties[UsergridEntityProperties.entityType.stringValue] = type
+            self.properties[UsergridEntityProperties.type.stringValue] = type
         }
 
         if let entityName = name {
@@ -155,7 +155,7 @@ public class UsergridEntity: NSObject, NSCoding {
     - returns: A `UsergridEntity` object provided that the `type` key within the dictionay exists. Otherwise nil.
     */
     public class func entity(jsonDict: [String:AnyObject]) -> UsergridEntity? {
-        guard let type = jsonDict[UsergridEntityProperties.entityType.stringValue] as? String
+        guard let type = jsonDict[UsergridEntityProperties.type.stringValue] as? String
             else {
                 return nil
         }
@@ -396,7 +396,7 @@ public class UsergridEntity: NSObject, NSCoding {
     private func getEntitySpecificProperty(_ entityProperty: UsergridEntityProperties) -> AnyObject? {
         var propertyValue: AnyObject? = nil
         switch entityProperty {
-            case .uuid,.entityType,.name :
+            case .uuid,.type,.name :
                 propertyValue = self.properties[entityProperty.stringValue]
             case .created,.modified :
                 if let milliseconds = self.properties[entityProperty.stringValue] as? Int {

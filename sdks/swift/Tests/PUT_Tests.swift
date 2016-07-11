@@ -54,7 +54,7 @@ class PUT_Tests: XCTestCase {
         let putExpect = self.expectation(withDescription: propertyNameToUpdate)
 
         Usergrid.PUT(PUT_Tests.collectionName, uuidOrName: PUT_Tests.entityUUID, jsonBody:[propertyNameToUpdate : propertiesNewValue]) { (response) in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(response)
             XCTAssertTrue(response.ok)
             XCTAssertEqual(response.entities!.count, 1)
@@ -80,7 +80,7 @@ class PUT_Tests: XCTestCase {
         let jsonDictToPut = [UsergridEntityProperties.uuid.stringValue : PUT_Tests.entityUUID, propertyNameToUpdate : propertiesNewValue]
 
         Usergrid.PUT(PUT_Tests.collectionName, jsonBody: jsonDictToPut) { (response) in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(response)
             XCTAssertTrue(response.ok)
             XCTAssertEqual(response.entities!.count, 1)
@@ -103,7 +103,7 @@ class PUT_Tests: XCTestCase {
         let putExpect = self.expectation(withDescription: propertyNameToUpdate)
 
         Usergrid.GET(PUT_Tests.collectionName, uuidOrName: PUT_Tests.entityUUID) { (getResponse) in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(getResponse)
             XCTAssertTrue(getResponse.ok)
             XCTAssertEqual(getResponse.entities!.count, 1)
@@ -116,7 +116,7 @@ class PUT_Tests: XCTestCase {
             responseEntity[propertyNameToUpdate] = propertiesNewValue
 
             Usergrid.PUT(responseEntity) { (putResponse) in
-                XCTAssertTrue(Thread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(putResponse)
                 XCTAssertTrue(putResponse.ok)
                 XCTAssertEqual(putResponse.entities!.count, 1)
@@ -140,7 +140,7 @@ class PUT_Tests: XCTestCase {
         let putExpect = self.expectation(withDescription: propertyNameToUpdate)
 
         Usergrid.PUT(self.query, jsonBody: [propertyNameToUpdate : propertiesNewValue]) { (putResponse) in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(putResponse)
             XCTAssertTrue(putResponse.ok)
             XCTAssertEqual(putResponse.entities!.count, 1)

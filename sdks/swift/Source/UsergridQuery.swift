@@ -440,7 +440,7 @@ public class UsergridQuery : NSObject,NSCopying {
      */
     @discardableResult
     public func urlTerm(_ term: String, equalsValue: String) -> Self {
-        if (term as NSString).isEqual(to: UsergridQuery.QL) {
+        if term == UsergridQuery.QL {
             return self.ql(equalsValue)
         } else {
             self.urlTerms.append(term + UsergridQueryOperator.equal.stringValue + equalsValue)
@@ -521,7 +521,7 @@ public class UsergridQuery : NSObject,NSCopying {
     }
     
     private func constructURLTermsString() -> String {
-        return (self.urlTerms as NSArray).componentsJoined(by: UsergridQuery.AMPERSAND)
+        return self.urlTerms.joined(separator: UsergridQuery.AMPERSAND)
     }
     
     private func constructRequirementString() -> String {
@@ -538,7 +538,7 @@ public class UsergridQuery : NSObject,NSCopying {
             requirementStrings.removeFirst()
         }
         
-        requirementsString = (requirementStrings.reversed() as NSArray).componentsJoined(by: UsergridQuery.SPACE)
+        requirementsString = requirementStrings.reversed().joined(separator: UsergridQuery.SPACE)
         return requirementsString
     }
     

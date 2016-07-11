@@ -48,7 +48,7 @@ class GET_Tests: XCTestCase {
 
         let getExpect = self.expectation(withDescription: "\(#function)")
         Usergrid.GET(GET_Tests.collectionName) { (response) in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(response)
             XCTAssertTrue(response.ok)
             XCTAssertTrue(response.hasNextPage)
@@ -62,7 +62,7 @@ class GET_Tests: XCTestCase {
 
         let getExpect = self.expectation(withDescription: "\(#function)")
         Usergrid.GET(self.query) { (response) in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(response)
             XCTAssertTrue(response.ok)
             XCTAssertEqual(response.count, 1)
@@ -75,7 +75,7 @@ class GET_Tests: XCTestCase {
 
         let getExpect = self.expectation(withDescription: "\(#function)")
         Usergrid.GET(GET_Tests.collectionName, uuidOrName:GET_Tests.entityUUID) { (response) in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(response)
             XCTAssertTrue(response.ok)
             let entity = response.first!
@@ -92,18 +92,18 @@ class GET_Tests: XCTestCase {
 
         let getExpect = self.expectation(withDescription: "\(#function)")
         Usergrid.GET(GET_Tests.collectionName) { (response) in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(response)
             XCTAssertTrue(response.ok)
             XCTAssertTrue(response.hasNextPage)
             XCTAssertEqual(response.count, 10)
 
             response.loadNextPage() { (nextPageResponse) in
-                XCTAssertTrue(Thread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertTrue(nextPageResponse.ok)
                 XCTAssertNotNil(nextPageResponse)
                 XCTAssertFalse(nextPageResponse.hasNextPage)
-                XCTAssertEqual(nextPageResponse.entities!.count, 7)
+                XCTAssertEqual(nextPageResponse.entities!.count, 9)
                 getExpect.fulfill()
             }
         }

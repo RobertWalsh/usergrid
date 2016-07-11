@@ -47,7 +47,7 @@ class CONNECTION_Tests: XCTestCase {
         let authExpect = self.expectation(withDescription: "\(#function)")
         Usergrid.authMode = .app
         Usergrid.authenticateApp(clientAuth) { auth,error in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNil(error)
             XCTAssertNotNil(Usergrid.appAuth)
 
@@ -57,7 +57,7 @@ class CONNECTION_Tests: XCTestCase {
                 XCTAssertNotNil(appAuth.expiry)
 
                 Usergrid.GET(CONNECTION_Tests.collectionName) { (response) in
-                    XCTAssertTrue(Thread.isMainThread())
+                    XCTAssertTrue(Thread.isMainThread)
                     XCTAssertNotNil(response)
                     XCTAssertTrue(response.ok)
                     XCTAssertTrue(response.hasNextPage)
@@ -68,12 +68,12 @@ class CONNECTION_Tests: XCTestCase {
                     XCTAssertEqual(entity.type, CONNECTION_Tests.collectionName)
 
                     entity.connect("likes", toEntity: entityToConnect) { (response) -> Void in
-                        XCTAssertTrue(Thread.isMainThread())
+                        XCTAssertTrue(Thread.isMainThread)
                         XCTAssertNotNil(response)
                         XCTAssertTrue(response.ok)
 
                         entity.getConnections(.out, relationship: "likes", query:nil) { (response) -> Void in
-                            XCTAssertTrue(Thread.isMainThread())
+                            XCTAssertTrue(Thread.isMainThread)
                             XCTAssertNotNil(response)
                             XCTAssertTrue(response.ok)
 
@@ -82,12 +82,12 @@ class CONNECTION_Tests: XCTestCase {
                             XCTAssertEqual(connectedEntity.uuidOrName, entityToConnect.uuidOrName)
 
                             entity.disconnect("likes", fromEntity: connectedEntity) { (response) -> Void in
-                                XCTAssertTrue(Thread.isMainThread())
+                                XCTAssertTrue(Thread.isMainThread)
                                 XCTAssertNotNil(response)
                                 XCTAssertTrue(response.ok)
 
                                 entity.getConnections(.out, relationship: "likes", query:nil) { (response) -> Void in
-                                    XCTAssertTrue(Thread.isMainThread())
+                                    XCTAssertTrue(Thread.isMainThread)
                                     XCTAssertNotNil(response)
                                     XCTAssertTrue(response.ok)
                                     authExpect.fulfill()

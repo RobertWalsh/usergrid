@@ -39,7 +39,7 @@ final class UsergridRequestManager {
     init(client:UsergridClient) {
         self.client = client
 
-        let config = URLSessionConfiguration.default()
+        let config = URLSessionConfiguration.default
 
         #if os(tvOS)
         config.httpAdditionalHeaders = ["User-Agent": "usergrid-tvOS/v\(UsergridSDKVersion)"]

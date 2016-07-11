@@ -174,7 +174,7 @@ public class UsergridDevice : UsergridEntity {
     */
     public static func commonDevicePropertyDict() -> [String:AnyObject] {
         var commonDevicePropertyDict: [String:AnyObject] = [:]
-        commonDevicePropertyDict[UsergridEntityProperties.entityType.stringValue] = UsergridDevice.DEVICE_ENTITY_TYPE
+        commonDevicePropertyDict[UsergridEntityProperties.type.stringValue] = UsergridDevice.DEVICE_ENTITY_TYPE
 
         #if os(watchOS)
             commonDevicePropertyDict[UsergridDeviceProperties.model.stringValue] = WKInterfaceDevice.current().model
@@ -187,7 +187,7 @@ public class UsergridDevice : UsergridEntity {
         #elseif os(OSX)
             commonDevicePropertyDict[UsergridDeviceProperties.model.stringValue] = "Mac"
             commonDevicePropertyDict[UsergridDeviceProperties.platform.stringValue] = "OSX"
-            commonDevicePropertyDict[UsergridDeviceProperties.osVersion.stringValue] = ProcessInfo.processInfo().operatingSystemVersionString
+            commonDevicePropertyDict[UsergridDeviceProperties.osVersion.stringValue] = ProcessInfo.processInfo.operatingSystemVersionString
         #endif
 
         return commonDevicePropertyDict

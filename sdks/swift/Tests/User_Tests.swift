@@ -158,7 +158,7 @@ class User_Tests: XCTestCase {
 
     func deleteUser(_ expectation:XCTestExpectation) {
         self.user.remove() { removeResponse in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(removeResponse)
             XCTAssertTrue(removeResponse.ok)
             XCTAssertNotNil(removeResponse.user)
@@ -172,7 +172,7 @@ class User_Tests: XCTestCase {
         let userExpect = self.expectation(withDescription: "\(#function)")
 
         user.save() { (createResponse) in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(createResponse)
             XCTAssertTrue(createResponse.ok)
             XCTAssertNotNil(createResponse.user)
@@ -204,14 +204,14 @@ class User_Tests: XCTestCase {
 
         UsergridUser.checkAvailable(user.email, username: user.username) { error,available in
 
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNil(error)
             XCTAssertTrue(available)
 
 //            self.deleteUser(userExpect)
 
             self.user.create() { (createResponse) in
-                XCTAssertTrue(Thread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(createResponse)
                 XCTAssertTrue(createResponse.ok)
                 XCTAssertNotNil(createResponse.user)
@@ -219,14 +219,14 @@ class User_Tests: XCTestCase {
                 XCTAssertNotNil(self.user.uuid)
 
                 self.user.login(self.user.username!, password:User_Tests.password) { (auth, loggedInUser, error) -> Void in
-                    XCTAssertTrue(Thread.isMainThread())
+                    XCTAssertTrue(Thread.isMainThread)
                     XCTAssertNil(error)
                     XCTAssertNotNil(auth)
                     XCTAssertNotNil(loggedInUser)
                     XCTAssertEqual(auth, self.user.auth!)
 
                     Usergrid.authenticateUser(self.user.auth!) { auth,currentUser,error in
-                        XCTAssertTrue(Thread.isMainThread())
+                        XCTAssertTrue(Thread.isMainThread)
                         XCTAssertNil(error)
                         XCTAssertNotNil(auth)
                         XCTAssertEqual(auth, self.user.auth!)
@@ -236,7 +236,7 @@ class User_Tests: XCTestCase {
                         XCTAssertEqual(currentUser, Usergrid.currentUser!)
 
                         self.user.reauthenticate() { auth, reauthedUser, error in
-                            XCTAssertTrue(Thread.isMainThread())
+                            XCTAssertTrue(Thread.isMainThread)
                             XCTAssertNil(error)
                             XCTAssertNotNil(auth)
                             XCTAssertEqual(auth, self.user.auth!)
@@ -245,7 +245,7 @@ class User_Tests: XCTestCase {
                             XCTAssertNotNil(Usergrid.currentUser)
 
                             self.user.logout() { response in
-                                XCTAssertTrue(Thread.isMainThread())
+                                XCTAssertTrue(Thread.isMainThread)
                                 XCTAssertNotNil(response)
                                 XCTAssertTrue(response.ok)
                                 XCTAssertNil(response.error)
@@ -264,7 +264,7 @@ class User_Tests: XCTestCase {
         let userExpect = self.expectation(withDescription: "\(#function)")
 
         user.create() { (createResponse) in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(createResponse)
             XCTAssertTrue(createResponse.ok)
             XCTAssertNotNil(createResponse.user)
@@ -272,19 +272,19 @@ class User_Tests: XCTestCase {
             XCTAssertNotNil(self.user.uuid)
 
             self.user.login(self.user.username!, password:User_Tests.password) { (auth, loggedInUser, error) -> Void in
-                XCTAssertTrue(Thread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNil(error)
                 XCTAssertNotNil(auth)
                 XCTAssertNotNil(loggedInUser)
                 XCTAssertEqual(auth, self.user.auth!)
 
                 self.user.resetPassword(User_Tests.password, new: User_Tests.resetPassword) { error,didSucceed in
-                    XCTAssertTrue(Thread.isMainThread())
+                    XCTAssertTrue(Thread.isMainThread)
                     XCTAssertTrue(didSucceed)
                     XCTAssertNil(error)
 
                     self.user.login(self.user.username!, password:User_Tests.resetPassword) { (auth, loggedInUser, error) -> Void in
-                        XCTAssertTrue(Thread.isMainThread())
+                        XCTAssertTrue(Thread.isMainThread)
                         XCTAssertNil(error)
                         XCTAssertNotNil(auth)
                         XCTAssertNotNil(loggedInUser)
