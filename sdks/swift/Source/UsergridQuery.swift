@@ -55,7 +55,7 @@ public class UsergridQuery : NSObject,NSCopying {
     
     - returns: Returns a new instance that’s a copy of the receiver.
     */
-    public func copy(with zone: NSZone?) -> AnyObject {
+    public func copy(with zone: NSZone?) -> Any {
         let queryCopy = UsergridQuery(self.collectionName)
         queryCopy.requirementStrings = NSArray(array:self.requirementStrings, copyItems: true) as! [String]
         queryCopy.urlTerms = NSArray(array:self.urlTerms, copyItems: true) as! [String]
@@ -171,7 +171,7 @@ public class UsergridQuery : NSObject,NSCopying {
      - returns: `Self`
      */
     @discardableResult
-    public func filter(_ term: String, value: AnyObject) -> Self { return self.eq(term, value: value) }
+    public func filter(_ term: String, value: Any) -> Self { return self.eq(term, value: value) }
     
     /**
      Equal-to. Query: where term = 'value'.
@@ -182,7 +182,7 @@ public class UsergridQuery : NSObject,NSCopying {
      - returns: `Self`
      */
     @discardableResult
-    public func equals(_ term: String, value: AnyObject) -> Self { return self.eq(term, value: value) }
+    public func equals(_ term: String, value: Any) -> Self { return self.eq(term, value: value) }
     
     /**
      Equal-to. Query: where term = 'value'.
@@ -193,7 +193,7 @@ public class UsergridQuery : NSObject,NSCopying {
      - returns: `Self`
      */
     @discardableResult
-    public func eq(_ term: String, value: AnyObject) -> Self { return self.addOperationRequirement(term, operation:.equal, value: value) }
+    public func eq(_ term: String, value: Any) -> Self { return self.addOperationRequirement(term, operation:.equal, value: value) }
     
     /**
      Greater-than. Query: where term > 'value'.
@@ -204,7 +204,7 @@ public class UsergridQuery : NSObject,NSCopying {
      - returns: `Self`
      */
     @discardableResult
-    public func greaterThan(_ term: String, value: AnyObject) -> Self { return self.gt(term, value: value) }
+    public func greaterThan(_ term: String, value: Any) -> Self { return self.gt(term, value: value) }
     
     /**
      Greater-than. Query: where term > 'value'.
@@ -215,7 +215,7 @@ public class UsergridQuery : NSObject,NSCopying {
      - returns: `Self`
      */
     @discardableResult
-    public func gt(_ term: String, value: AnyObject) -> Self { return self.addOperationRequirement(term, operation:.greaterThan, value: value) }
+    public func gt(_ term: String, value: Any) -> Self { return self.addOperationRequirement(term, operation:.greaterThan, value: value) }
     
     /**
      Greater-than-or-equal-to. Query: where term >= 'value'.
@@ -226,7 +226,7 @@ public class UsergridQuery : NSObject,NSCopying {
      - returns: `Self`
      */
     @discardableResult
-    public func greaterThanOrEqual(_ term: String, value: AnyObject) -> Self { return self.gte(term, value: value) }
+    public func greaterThanOrEqual(_ term: String, value: Any) -> Self { return self.gte(term, value: value) }
     
     /**
      Greater-than-or-equal-to. Query: where term >= 'value'.
@@ -237,7 +237,7 @@ public class UsergridQuery : NSObject,NSCopying {
      - returns: `Self`
      */
     @discardableResult
-    public func gte(_ term: String, value: AnyObject) -> Self { return self.addOperationRequirement(term, operation:.greaterThanEqualTo, value: value) }
+    public func gte(_ term: String, value: Any) -> Self { return self.addOperationRequirement(term, operation:.greaterThanEqualTo, value: value) }
     
     /**
      Less-than. Query: where term < 'value'.
@@ -248,7 +248,7 @@ public class UsergridQuery : NSObject,NSCopying {
      - returns: `Self`
      */
     @discardableResult
-    public func lessThan(_ term: String, value: AnyObject) -> Self { return self.lt(term, value: value) }
+    public func lessThan(_ term: String, value: Any) -> Self { return self.lt(term, value: value) }
     
     /**
      Less-than. Query: where term < 'value'.
@@ -259,7 +259,7 @@ public class UsergridQuery : NSObject,NSCopying {
      - returns: `Self`
      */
     @discardableResult
-    public func lt(_ term: String, value: AnyObject) -> Self { return self.addOperationRequirement(term, operation:.lessThan, value: value) }
+    public func lt(_ term: String, value: Any) -> Self { return self.addOperationRequirement(term, operation:.lessThan, value: value) }
     
     /**
      Less-than-or-equal-to. Query: where term <= 'value'.
@@ -270,7 +270,7 @@ public class UsergridQuery : NSObject,NSCopying {
      - returns: `Self`
      */
     @discardableResult
-    public func lessThanOrEqual(_ term: String, value: AnyObject) -> Self { return self.lte(term, value: value) }
+    public func lessThanOrEqual(_ term: String, value: Any) -> Self { return self.lte(term, value: value) }
     
     /**
      Less-than-or-equal-to. Query: where term <= 'value'.
@@ -281,7 +281,7 @@ public class UsergridQuery : NSObject,NSCopying {
      - returns: `Self`
      */
     @discardableResult
-    public func lte(_ term: String, value: AnyObject) -> Self { return self.addOperationRequirement(term, operation:.lessThanEqualTo, value: value) }
+    public func lte(_ term: String, value: Any) -> Self { return self.addOperationRequirement(term, operation:.lessThanEqualTo, value: value) }
     
     /**
      Contains. Query: location within val of lat, long.
@@ -488,7 +488,7 @@ public class UsergridQuery : NSObject,NSCopying {
     }
 
     @discardableResult
-    private func addOperationRequirement(_ term: String, operation: UsergridQueryOperator, value: AnyObject) -> Self {
+    private func addOperationRequirement(_ term: String, operation: UsergridQueryOperator, value: Any) -> Self {
         if let stringValue = value as? String {
             var operationValue: String = stringValue
             if !stringValue.isUuid() {
@@ -496,7 +496,7 @@ public class UsergridQuery : NSObject,NSCopying {
             }
             return self.addRequirement(term + UsergridQuery.SPACE + operation.stringValue + UsergridQuery.SPACE + operationValue)
         } else {
-            return self.addRequirement(term + UsergridQuery.SPACE + operation.stringValue + UsergridQuery.SPACE + value.description)
+            return self.addRequirement(term + UsergridQuery.SPACE + operation.stringValue + UsergridQuery.SPACE + (value as AnyObject).description )
         }
     }
     
@@ -529,12 +529,12 @@ public class UsergridQuery : NSObject,NSCopying {
         var requirementStrings = self.requirementStrings
         
         // If the first requirement is empty lets remove it.
-        if let firstRequirement = requirementStrings.first where firstRequirement.isEmpty {
+        if let firstRequirement = requirementStrings.first , firstRequirement.isEmpty {
             requirementStrings.removeFirst()
         }
         
         // If the first requirement now is a conditional separator then we should remove it so its not placed at the end of the constructed string.
-        if let firstRequirement = requirementStrings.first where firstRequirement == UsergridQuery.OR || firstRequirement == UsergridQuery.NOT {
+        if let firstRequirement = requirementStrings.first , firstRequirement == UsergridQuery.OR || firstRequirement == UsergridQuery.NOT {
             requirementStrings.removeFirst()
         }
         
@@ -565,7 +565,7 @@ public class UsergridQuery : NSObject,NSCopying {
             }
             urlAppend += urlTermsString
         }
-        if let cursorString = self.cursor where !cursorString.isEmpty {
+        if let cursorString = self.cursor , !cursorString.isEmpty {
             if !urlAppend.isEmpty {
                 urlAppend += UsergridQuery.AMPERSAND
             }

@@ -54,7 +54,7 @@ public class UsergridRequest : NSObject {
     public let headers: [String:String]?
 
     /// The JSON body that will be set on the request.  Can be either a valid JSON object or NSData.
-    public let jsonBody: AnyObject?
+    public let jsonBody: Any?
     
     /// The query params that will be set on the request.
     public let queryParams: [String:String]?
@@ -81,7 +81,7 @@ public class UsergridRequest : NSObject {
         query:UsergridQuery? = nil,
         auth:UsergridAuth? = nil,
         headers:[String:String]? = nil,
-        jsonBody:AnyObject? = nil,
+        jsonBody:Any? = nil,
         queryParams:[String:String]? = nil) {
             self.method = method
             self.baseUrl = baseUrl
@@ -90,7 +90,7 @@ public class UsergridRequest : NSObject {
             self.headers = headers
             self.query = query
             self.queryParams = queryParams
-            if let body = jsonBody where (body is Data || JSONSerialization.isValidJSONObject(body)) {
+            if let body = jsonBody , (body is Data || JSONSerialization.isValidJSONObject(body)) {
                 self.jsonBody = body
             } else {
                 self.jsonBody = nil
@@ -141,7 +141,7 @@ public class UsergridRequest : NSObject {
         return URL(string:constructedURLString)!
     }
 
-    private func applyHeaders(_ request:NSMutableURLRequest) {
+    fileprivate func applyHeaders(_ request:NSMutableURLRequest) {
         if let httpHeaders = self.headers {
             for (key,value) in httpHeaders {
                 request.setValue(value, forHTTPHeaderField: key)
@@ -150,7 +150,7 @@ public class UsergridRequest : NSObject {
     }
 
     private func applyBody(_ request:NSMutableURLRequest) {
-        if let jsonBody = self.jsonBody, httpBody = UsergridRequest.jsonBodyToData(jsonBody) {
+        if let jsonBody = self.jsonBody, let httpBody = UsergridRequest.jsonBodyToData(jsonBody) {
             request.httpBody = httpBody
             request.setValue(String(format: "%lu", httpBody.count), forHTTPHeaderField: UsergridRequest.CONTENT_LENGTH)
         }
@@ -164,7 +164,7 @@ public class UsergridRequest : NSObject {
         }
     }
 
-    private static func jsonBodyToData(_ jsonBody:AnyObject) -> Data? {
+    private static func jsonBodyToData(_ jsonBody:Any) -> Data? {
         if let jsonBodyAsNSData = jsonBody as? Data {
             return jsonBodyAsNSData
         } else {
@@ -175,13 +175,13 @@ public class UsergridRequest : NSObject {
         }
     }
 
-    private static let AUTHORIZATION = "Authorization"
-    private static let ACCESS_TOKEN = "access_token"
-    private static let APPLICATION_JSON = "application/json; charset=utf-8"
-    private static let BEARER = "Bearer"
-    private static let CONTENT_LENGTH = "Content-Length"
-    private static let CONTENT_TYPE = "Content-Type"
-    private static let FORWARD_SLASH = "/"
+    fileprivate static let AUTHORIZATION = "Authorization"
+    fileprivate static let ACCESS_TOKEN = "access_token"
+    fileprivate static let APPLICATION_JSON = "application/json; charset=utf-8"
+    fileprivate static let BEARER = "Bearer"
+    fileprivate static let CONTENT_LENGTH = "Content-Length"
+    fileprivate static let CONTENT_TYPE = "Content-Type"
+    fileprivate static let FORWARD_SLASH = "/"
 
     static func jsonHeaderContentType() -> [String:String] {
         return [UsergridRequest.CONTENT_TYPE:UsergridRequest.APPLICATION_JSON]
@@ -233,7 +233,7 @@ public class UsergridAssetUploadRequest: UsergridRequest {
                     super.init(method: .put, baseUrl: baseUrl, paths: paths, auth: auth)
     }
 
-    private override func applyHeaders(_ request: NSMutableURLRequest) {
+    fileprivate override func applyHeaders(_ request: NSMutableURLRequest) {
         super.applyHeaders(request)
         request.setValue(UsergridAssetUploadRequest.ASSET_UPLOAD_CONTENT_HEADER, forHTTPHeaderField: UsergridRequest.CONTENT_TYPE)
         request.setValue(String(format: "%lu", self.multiPartHTTPBody.count), forHTTPHeaderField: UsergridRequest.CONTENT_LENGTH)

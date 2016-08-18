@@ -32,13 +32,13 @@ import MobileCoreServices
 #endif
 
 /// The progress block used in `UsergridAsset` are being uploaded or downloaded.
-public typealias UsergridAssetRequestProgress = (bytesFinished:Int64, bytesExpected: Int64) -> Void
+public typealias UsergridAssetRequestProgress = (_ bytesFinished:Int64, _ bytesExpected: Int64) -> Void
 
 /// The completion block used in `UsergridAsset` are finished uploading.
-public typealias UsergridAssetUploadCompletion = (asset:UsergridAsset?, response: UsergridResponse) -> Void
+public typealias UsergridAssetUploadCompletion = (_ asset:UsergridAsset?, _ response: UsergridResponse) -> Void
 
 /// The completion block used in `UsergridAsset` are finished downloading.
-public typealias UsergridAssetDownloadCompletion = (asset:UsergridAsset?, error: UsergridResponseError?) -> Void
+public typealias UsergridAssetDownloadCompletion = (_ asset:UsergridAsset?, _ error: UsergridResponseError?) -> Void
 
 /**
 As Usergrid supports storing binary assets, the SDKs are designed to make uploading assets easier and more robust. Attaching, uploading, and downloading assets is handled by the `UsergridEntity` class.
@@ -124,8 +124,8 @@ public class UsergridAsset: NSObject, NSCoding {
     public convenience init?(filename:String? = UsergridAsset.DEFAULT_FILE_NAME, fileURL:URL, contentType:String? = nil) {
         if fileURL.isFileURL, let assetData = try? Data(contentsOf: fileURL) {
             var fileNameToUse = filename
-            if fileNameToUse != UsergridAsset.DEFAULT_FILE_NAME, let inferredFileName = fileURL.lastPathComponent {
-                fileNameToUse = inferredFileName
+            if fileNameToUse != UsergridAsset.DEFAULT_FILE_NAME, !fileURL.lastPathComponent.isEmpty {
+                fileNameToUse = fileURL.lastPathComponent
             }
             if let fileContentType = contentType ?? UsergridAsset.MIMEType(fileURL) {
                 self.init(filename:fileNameToUse,data:assetData,originalLocation:fileURL.absoluteString,contentType:fileContentType)
@@ -182,8 +182,9 @@ public class UsergridAsset: NSObject, NSCoding {
     }
 
     private static func MIMEType(_ fileURL: URL) -> String? {
-        if let pathExtension = fileURL.pathExtension {
-            if let UTIRef = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, pathExtension, nil) {
+        let pathExtension = fileURL.pathExtension
+        if !pathExtension.isEmpty {
+            if let UTIRef = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, pathExtension as CFString, nil) {
                 let UTI = UTIRef.takeUnretainedValue()
                 UTIRef.release()
                 if let MIMETypeRef = UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassMIMEType) {

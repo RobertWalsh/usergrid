@@ -27,10 +27,10 @@
 import Foundation
 
 /// The completion block used for checking email and/or username availablity for new `UsergridUser` objects.
-public typealias UsergridUserAvailabilityCompletion = (error: UsergridResponseError?, available:Bool) -> Void
+public typealias UsergridUserAvailabilityCompletion = (_ error: UsergridResponseError?, _ available:Bool) -> Void
 
 /// The completion block used for changing the password of `UsergridUser` objects.
-public typealias UsergridUserResetPasswordCompletion = (error: UsergridResponseError?, didSucceed:Bool) -> Void
+public typealias UsergridUserResetPasswordCompletion = (_ error: UsergridResponseError?, _ didSucceed:Bool) -> Void
 
 /**
 `UsergridUser` is a special subclass of `UsergridEntity` that supports functions and properties unique to users.
@@ -132,7 +132,7 @@ public class UsergridUser : UsergridEntity {
 
      - returns: A new `UsergridUser` object.
      */
-    required public init(type: String, name: String?, propertyDict: [String : AnyObject]?) {
+    required public init(type: String, name: String?, propertyDict: [String : Any]?) {
         super.init(type: type, name: name, propertyDict: propertyDict)
     }
 
@@ -144,7 +144,7 @@ public class UsergridUser : UsergridEntity {
 
     - returns: A new instance of `UsergridUser`.
     */
-    public init(name:String,propertyDict:[String:AnyObject]? = nil) {
+    public init(name:String,propertyDict:[String:Any]? = nil) {
         super.init(type: UsergridUser.USER_ENTITY_TYPE, name:name, propertyDict:propertyDict)
     }
 
@@ -269,7 +269,7 @@ public class UsergridUser : UsergridEntity {
             query.or().eq(UsergridUserProperties.username.stringValue, value: usernameValue)
         }
         client.GET(query) { (response) -> Void in
-            completion(error: response.error, available: response.entity == nil)
+            completion(response.error, response.entity == nil)
         }
     }
 
@@ -295,7 +295,7 @@ public class UsergridUser : UsergridEntity {
             if response.ok, let createdUser = response.user {
                 self.copyInternalsFromEntity(createdUser)
             }
-            completion?(response: response)
+            completion?(response)
         }
     }
 
@@ -326,7 +326,7 @@ public class UsergridUser : UsergridEntity {
         let userAuth = UsergridUserAuth(username: username, password: password)
         client.authenticateUser(userAuth,setAsCurrentUser:false) { (auth, user, error) -> Void in
             self.auth = userAuth
-            completion?(auth: userAuth, user: user, error: error)
+            completion?(userAuth, user, error)
         }
     }
 
@@ -371,7 +371,7 @@ public class UsergridUser : UsergridEntity {
     public func reauthenticate(_ client: UsergridClient, completion: UsergridUserAuthCompletionBlock? = nil) {
         guard let userAuth = self.auth
             else {
-                completion?(auth: nil, user: self, error: UsergridResponseError(errorName: "Invalid UsergridUserAuth.", errorDescription: "No UsergridUserAuth found on the UsergridUser."))
+                completion?(nil, self, UsergridResponseError(errorName: "Invalid UsergridUserAuth.", errorDescription: "No UsergridUserAuth found on the UsergridUser."))
                 return
         }
 
@@ -397,13 +397,13 @@ public class UsergridUser : UsergridEntity {
         guard let uuidOrUsername = self.uuidOrUsername,
               let accessToken = self.auth?.accessToken
             else {
-                completion?(response: UsergridResponse(client:client, errorName:"Logout Failed.", errorDescription:"UUID or Access Token not found on UsergridUser object."))
+                completion?(UsergridResponse(client:client, errorName:"Logout Failed.", errorDescription:"UUID or Access Token not found on UsergridUser object."))
                 return
         }
         
         client.logoutUser(uuidOrUsername, token: accessToken) { (response) in
             self.auth = nil
-            completion?(response: response)
+            completion?(response)
         }
     }
 
@@ -428,7 +428,7 @@ public class UsergridUser : UsergridEntity {
         let deviceToConnect = device ?? UsergridDevice.sharedDevice
         guard let _ = deviceToConnect.uuidOrName
             else {
-            completion?(response: UsergridResponse(client: client, errorName: "Device cannot be connected to User.", errorDescription: "Device has neither an UUID or name specified."))
+            completion?(UsergridResponse(client: client, errorName: "Device cannot be connected to User.", errorDescription: "Device has neither an UUID or name specified."))
             return
         }
 
@@ -475,20 +475,20 @@ public class UsergridUser : UsergridEntity {
         let deviceToDisconnectFrom = device ?? UsergridDevice.sharedDevice
         guard let _ = deviceToDisconnectFrom.uuidOrName
             else {
-                completion?(response: UsergridResponse(client: client, errorName: "Device cannot be disconnected from User.", errorDescription: "Device has neither an UUID or name specified."))
+                completion?(UsergridResponse(client: client, errorName: "Device cannot be disconnected from User.", errorDescription: "Device has neither an UUID or name specified."))
                 return
         }
 
         self.disconnect(client, relationship: "", fromEntity: deviceToDisconnectFrom, completion: completion)
     }
 
-    private func getUserSpecificProperty(_ userProperty: UsergridUserProperties) -> AnyObject? {
-        var propertyValue: AnyObject? = super[userProperty.stringValue]
+    private func getUserSpecificProperty(_ userProperty: UsergridUserProperties) -> Any? {
+        var propertyValue: Any? = super[userProperty.stringValue]
         switch userProperty {
             case .activated,.disabled :
-                propertyValue = propertyValue?.boolValue
+                propertyValue = (propertyValue as AnyObject) as? Bool ?? false
             case .age :
-                propertyValue = propertyValue?.intValue
+                propertyValue = (propertyValue as AnyObject) as? Int ?? 0 // TODO: Check these conversions
             case .name,.username,.password,.email,.picture :
                 break
         }
@@ -507,7 +507,7 @@ public class UsergridUser : UsergridEntity {
     usergridUser["name"] = someName
     ```
     */
-    override public subscript(propertyName: String) -> AnyObject? {
+    override public subscript(propertyName: String) -> Any? {
         get {
             if let userProperty = UsergridUserProperties.fromString(propertyName) {
                 return self.getUserSpecificProperty(userProperty)

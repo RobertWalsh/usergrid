@@ -27,7 +27,7 @@
 import Foundation
 
 /// The completion block used in for most `UsergridClient` requests.
-public typealias UsergridResponseCompletion = (response: UsergridResponse) -> Void
+public typealias UsergridResponseCompletion = (_ response: UsergridResponse) -> Void
 
 /**
 `UsergridResponse` is the core class that handles both successful and unsuccessful HTTP responses from Usergrid. 
@@ -44,7 +44,7 @@ public class UsergridResponse: NSObject {
     public weak var client: UsergridClient?
 
     /// The raw response JSON.
-    internal(set) public var responseJSON: [String:AnyObject]?
+    internal(set) public var responseJSON: [String:Any]?
 
     /// The query used on the request.
     internal(set) public var query: UsergridQuery?
@@ -145,7 +145,7 @@ public class UsergridResponse: NSObject {
     public init(client:UsergridClient?, data:Data?, response:HTTPURLResponse?, error:NSError?, query:UsergridQuery? = nil) {
         self.client = client
         self.statusCode = response?.statusCode
-        self.headers = response?.allHeaderFields as? [String:String]
+//        self.headers = response?.allHeaderFields as? [String:String]
 
         if let sessionError = error {
             self.error = UsergridResponseError(errorName: sessionError.domain, errorDescription: sessionError.localizedDescription)
@@ -158,15 +158,15 @@ public class UsergridResponse: NSObject {
         if let jsonData = data {
             do {
                 let dataAsJSON = try JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.mutableContainers)
-                if let jsonDict = dataAsJSON as? [String:AnyObject] {
+                if let jsonDict = dataAsJSON as? [String:Any] {
                     self.responseJSON = jsonDict
                     if let responseError = UsergridResponseError(jsonDictionary: jsonDict) {
                         self.error = responseError
                     } else {
-                        if let entitiesJSONArray = jsonDict[UsergridResponse.ENTITIES] as? [[String:AnyObject]] where entitiesJSONArray.count > 0 {
+                        if let entitiesJSONArray = jsonDict[UsergridResponse.ENTITIES] as? [[String:Any]] , entitiesJSONArray.count > 0 {
                             self.entities = UsergridEntity.entities(jsonArray: entitiesJSONArray)
                         }
-                        if let cursor = jsonDict[UsergridResponse.CURSOR] as? String where !cursor.isEmpty {
+                        if let cursor = jsonDict[UsergridResponse.CURSOR] as? String , !cursor.isEmpty {
                             self.cursor = cursor
                         }
                     }
@@ -194,7 +194,7 @@ public class UsergridResponse: NSObject {
                 self.client?.GET(UsergridQuery(type).cursor(self.cursor), queryCompletion:completion)
             }
         } else {
-            completion(response: UsergridResponse(client: self.client, errorName: "No next page.", errorDescription: "No next page was found."))
+            completion(UsergridResponse(client: self.client, errorName: "No next page.", errorDescription: "No next page was found."))
         }
     }
 

@@ -128,7 +128,7 @@ public class UsergridClientConfig : NSObject, NSCoding {
         self.orgId = orgId
         self.baseUrl = baseUrl
         self.appAuth = aDecoder.decodeObject(forKey: "appAuth") as? UsergridAppAuth
-        self.persistCurrentUserInKeychain = aDecoder.decodeBool(forKey: "persistCurrentUserInKeychain") ?? true
+        self.persistCurrentUserInKeychain = aDecoder.decodeBool(forKey: "persistCurrentUserInKeychain")
         self.authMode = (UsergridAuthMode(rawValue:aDecoder.decodeInteger(forKey: "authMode")) ?? .none)!
         super.init()
     }

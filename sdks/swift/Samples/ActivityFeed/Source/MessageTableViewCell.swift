@@ -49,7 +49,7 @@ public class MessageTableViewCell : UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         self.selectionStyle = UITableViewCellSelectionStyle.none
-        self.backgroundColor = UIColor.white()
+        self.backgroundColor = UIColor.white
         self.configureSubviews()
     }
 
@@ -67,17 +67,17 @@ public class MessageTableViewCell : UITableViewCell {
 
     func configureSubviews() {
         self.titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        self.titleLabel.backgroundColor = UIColor.clear()
+        self.titleLabel.backgroundColor = UIColor.clear
         self.titleLabel.isUserInteractionEnabled = false
         self.titleLabel.numberOfLines = 0
-        self.titleLabel.textColor = UIColor.gray()
+        self.titleLabel.textColor = UIColor.gray
         self.titleLabel.font = UIFont.boldSystemFont(ofSize: MessageTableViewCell.defaultFontSize)
 
         self.bodyLabel.translatesAutoresizingMaskIntoConstraints = false
-        self.bodyLabel.backgroundColor = UIColor.clear()
+        self.bodyLabel.backgroundColor = UIColor.clear
         self.bodyLabel.isUserInteractionEnabled = false
         self.bodyLabel.numberOfLines = 0
-        self.bodyLabel.textColor = UIColor.gray()
+        self.bodyLabel.textColor = UIColor.gray
         self.bodyLabel.font = UIFont.boldSystemFont(ofSize: 13)
 
         self.thumbnailView.translatesAutoresizingMaskIntoConstraints = false
@@ -90,7 +90,7 @@ public class MessageTableViewCell : UITableViewCell {
         self.contentView.addSubview(self.titleLabel)
         self.contentView.addSubview(self.bodyLabel)
 
-        let views = ["thumbnailView":self.thumbnailView, "titleLabel":self.titleLabel, "bodyLabel":self.bodyLabel]
+        let views = ["thumbnailView":self.thumbnailView, "titleLabel":self.titleLabel, "bodyLabel":self.bodyLabel] as [String : Any]
         let metrics = ["thumbSize":MessageTableViewCell.kMessageTableViewCellAvatarHeight, "padding":15, "right":10, "left":5]
 
         self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-left-[thumbnailView(thumbSize)]-right-[titleLabel(>=0)]-right-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: metrics, views: views))

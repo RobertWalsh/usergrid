@@ -25,6 +25,7 @@
  */
 
 import XCTest
+import Foundation
 @testable import UsergridSDK
 
 class ASSET_Tests: XCTestCase {
@@ -47,7 +48,7 @@ class ASSET_Tests: XCTestCase {
     }
 
     func getFullPathOfFile(_ fileLocation:String) -> String {
-        return (Bundle(for: object_getClass(self)).resourcePath! as NSString).appendingPathComponent(fileLocation)
+        return (Bundle(for: object_getClass(self)).resourcePath!) + "/\(fileLocation)"
     }
 
     func test_ASSET_INIT() {
@@ -78,7 +79,7 @@ class ASSET_Tests: XCTestCase {
     }
 
     func test_IMAGE_UPLOAD() {
-        let getExpect = self.expectation(withDescription: "\(#function)")
+        let getExpect = self.expectation(description: "\(#function)")
         let uploadProgress : UsergridAssetRequestProgress = { (bytes,expected) in
             print("UPLOAD PROGRESS BLOCK: BYTES:\(bytes) --- EXPECTED:\(expected)")
         }
@@ -132,7 +133,7 @@ class ASSET_Tests: XCTestCase {
                 }
             }
         }
-        self.waitForExpectations(withTimeout: 100, handler: nil)
+        self.waitForExpectations(timeout: 100, handler: nil)
     }
 
     func deleteUser(_ user:UsergridUser,expectation:XCTestExpectation) {
@@ -148,7 +149,7 @@ class ASSET_Tests: XCTestCase {
     }
 
     func test_ATTACH_ASSET_TO_CURRENT_USER() {
-        let userAssetExpect = self.expectation(withDescription: "\(#function)")
+        let userAssetExpect = self.expectation(description: "\(#function)")
 
         let user = UsergridUser(name:User_Tests.name, email:User_Tests.email, username:User_Tests.username, password:User_Tests.password)
         let uploadProgress : UsergridAssetRequestProgress = { (bytes,expected) in
@@ -231,7 +232,7 @@ class ASSET_Tests: XCTestCase {
                 }
             }
         }
-        self.waitForExpectations(withTimeout: 100, handler: nil)
+        self.waitForExpectations(timeout: 100, handler: nil)
     }
 
 
@@ -240,7 +241,7 @@ class ASSET_Tests: XCTestCase {
                                 "etag":"dfa7421ea4f35d33e12ba93979a46b7e",
                                 "checkSum":"dfa7421ea4f35d33e12ba93979a46b7e",
                                 "content-length":1417896,
-                                "last-modified":1455728898545]
+                                "last-modified":1455728898545] as [String : Any]
         
         let fileMetaData = UsergridFileMetaData(fileMetaDataJSON:fileMetaDataDict)
 

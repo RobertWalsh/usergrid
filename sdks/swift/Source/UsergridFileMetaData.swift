@@ -62,7 +62,7 @@ public class UsergridFileMetaData : NSObject,NSCoding {
 
     - returns: A new instance of `UsergridFileMetaData`.
     */
-    public init(fileMetaDataJSON:[String:AnyObject]) {
+    public init(fileMetaDataJSON:[String:Any]) {
         self.eTag = fileMetaDataJSON["etag"] as? String
         self.checkSum = fileMetaDataJSON["checksum"] as? String
         self.contentType = fileMetaDataJSON["content-type"] as? String
@@ -89,8 +89,8 @@ public class UsergridFileMetaData : NSObject,NSCoding {
         self.eTag = aDecoder.decodeObject(forKey: "etag") as? String
         self.checkSum = aDecoder.decodeObject(forKey: "checksum") as? String
         self.contentType = aDecoder.decodeObject(forKey: "content-type") as? String
-        self.contentLength = aDecoder.decodeInteger(forKey: "content-length") ?? 0
-        self.lastModifiedTimeStamp = aDecoder.decodeInteger(forKey: "last-modified") ?? 0
+        self.contentLength = aDecoder.decodeInteger(forKey: "content-length")
+        self.lastModifiedTimeStamp = aDecoder.decodeInteger(forKey: "last-modified")
 
         if self.lastModifiedTimeStamp > 0 {
             self.lastModifiedDate = Date(milliseconds: self.lastModifiedTimeStamp.description)

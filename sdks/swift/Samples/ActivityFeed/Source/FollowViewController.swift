@@ -33,7 +33,7 @@ class FollowViewController : UIViewController {
     @IBOutlet weak var usernameTextField: UITextField!
 
     @IBAction func addFollowerButtonTouched(_ sender:AnyObject?) {
-        guard let username = usernameTextField.text where !username.isEmpty
+        guard let username = usernameTextField.text, !username.isEmpty
         else {
             self.showAlert("Follow failed.", message: "Please enter a valid username.")
             return

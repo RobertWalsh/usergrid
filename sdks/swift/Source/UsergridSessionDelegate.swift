@@ -28,7 +28,7 @@ import Foundation
 
 final class UsergridSessionDelegate: NSObject {
 
-    private var requestDelegates: [Int:UsergridAssetRequestWrapper] = [:]
+    fileprivate var requestDelegates: [Int:UsergridAssetRequestWrapper] = [:]
 
     func addRequestDelegate(_ task:URLSessionTask,requestWrapper:UsergridAssetRequestWrapper) {
         requestDelegates[task.taskIdentifier] = requestWrapper
@@ -43,14 +43,14 @@ extension UsergridSessionDelegate : URLSessionTaskDelegate {
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         if let progressBlock = requestDelegates[task.taskIdentifier]?.progress {
-            progressBlock(bytesFinished:totalBytesSent, bytesExpected: totalBytesExpectedToSend)
+            progressBlock(totalBytesSent, totalBytesExpectedToSend)
         }
     }
 
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: NSError?) {
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         if let requestWrapper = requestDelegates[task.taskIdentifier] {
-            requestWrapper.error = error
-            requestWrapper.completion(requestWrapper: requestWrapper)
+            requestWrapper.error = error as? NSError // WTF
+            requestWrapper.completion(requestWrapper)
         }
         self.removeRequestDelegate(task)
     }
@@ -58,14 +58,14 @@ extension UsergridSessionDelegate : URLSessionTaskDelegate {
 
 extension UsergridSessionDelegate : URLSessionDataDelegate {
 
-    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: (URLSession.ResponseDisposition) -> Void) {
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Swift.Void) {
         if let requestWrapper = requestDelegates[dataTask.taskIdentifier] {
             requestWrapper.response = response
         }
         completionHandler(Foundation.URLSession.ResponseDisposition.allow)
     }
 
-    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         if let requestWrapper = requestDelegates[dataTask.taskIdentifier] {
             var mutableData = requestWrapper.responseData != nil ? (NSMutableData(data: requestWrapper.responseData!) as Data) : Data()
             mutableData.append(data)
@@ -78,7 +78,7 @@ extension UsergridSessionDelegate : URLSessionDownloadDelegate {
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         if let progressBlock = requestDelegates[downloadTask.taskIdentifier]?.progress {
-            progressBlock(bytesFinished:totalBytesWritten, bytesExpected: totalBytesExpectedToWrite)
+            progressBlock(totalBytesWritten, totalBytesExpectedToWrite)
         }
     }
 

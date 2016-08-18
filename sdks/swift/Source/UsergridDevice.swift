@@ -80,7 +80,7 @@ public class UsergridDevice : UsergridEntity {
 
      - returns: A new `UsergridDevice` object.
      */
-    required public init(type:String, name:String? = nil, propertyDict:[String:AnyObject]? = nil) {
+    required public init(type:String, name:String? = nil, propertyDict:[String:Any]? = nil) {
         super.init(type: type, name: name, propertyDict: propertyDict)
     }
 
@@ -133,7 +133,7 @@ public class UsergridDevice : UsergridEntity {
                     UsergridDevice.saveSharedDeviceToKeychain()
                 }
             }
-            completion?(response:response)
+            completion?(response)
         }
     }
 
@@ -154,7 +154,7 @@ public class UsergridDevice : UsergridEntity {
         let uuid = usergridDevice["uuid"]
         ```
     */
-    override public subscript(propertyName: String) -> AnyObject? {
+    override public subscript(propertyName: String) -> Any? {
         get {
             return super[propertyName]
         }
@@ -172,8 +172,8 @@ public class UsergridDevice : UsergridEntity {
 
     - returns: A property dictionary with the common properties set.
     */
-    public static func commonDevicePropertyDict() -> [String:AnyObject] {
-        var commonDevicePropertyDict: [String:AnyObject] = [:]
+    public static func commonDevicePropertyDict() -> [String:Any] {
+        var commonDevicePropertyDict: [String:Any] = [:]
         commonDevicePropertyDict[UsergridEntityProperties.type.stringValue] = UsergridDevice.DEVICE_ENTITY_TYPE
 
         #if os(watchOS)
@@ -181,9 +181,9 @@ public class UsergridDevice : UsergridEntity {
             commonDevicePropertyDict[UsergridDeviceProperties.platform.stringValue] = WKInterfaceDevice.current().systemName
             commonDevicePropertyDict[UsergridDeviceProperties.osVersion.stringValue] = WKInterfaceDevice.current().systemVersion
         #elseif os(iOS) || os(tvOS)
-            commonDevicePropertyDict[UsergridDeviceProperties.model.stringValue] = UIDevice.current().model
-            commonDevicePropertyDict[UsergridDeviceProperties.platform.stringValue] = UIDevice.current().systemName
-            commonDevicePropertyDict[UsergridDeviceProperties.osVersion.stringValue] = UIDevice.current().systemVersion
+            commonDevicePropertyDict[UsergridDeviceProperties.model.stringValue] = UIDevice.current.model
+            commonDevicePropertyDict[UsergridDeviceProperties.platform.stringValue] = UIDevice.current.systemName
+            commonDevicePropertyDict[UsergridDeviceProperties.osVersion.stringValue] = UIDevice.current.systemVersion
         #elseif os(OSX)
             commonDevicePropertyDict[UsergridDeviceProperties.model.stringValue] = "Mac"
             commonDevicePropertyDict[UsergridDeviceProperties.platform.stringValue] = "OSX"

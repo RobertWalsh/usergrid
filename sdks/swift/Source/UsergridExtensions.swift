@@ -89,7 +89,7 @@ public extension Date {
      */
     public static func nowAsMilliseconds() -> Int {
         var tv = timeval()
-        let currentMillisecondTime = withUnsafeMutablePointer(&tv, { (t: UnsafeMutablePointer<timeval>) -> Int in
+        let currentMillisecondTime = withUnsafeMutablePointer(to: &tv, { (t: UnsafeMutablePointer<timeval>) -> Int in
             gettimeofday(t, nil)
             return (Int(t.pointee.tv_sec) * kUsergrid_Milliseconds_Per_Second) + (Int(t.pointee.tv_usec) / kUsergrid_Milliseconds_Per_Second)
         })

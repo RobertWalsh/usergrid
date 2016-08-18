@@ -34,7 +34,7 @@ class InterfaceController: WKInterfaceController,WCSessionDelegate {
     @IBOutlet var messageTable: WKInterfaceTable!
     var messageEntities: [ActivityEntity] = []
 
-    override func awake(withContext context: AnyObject?) {
+    override func awake(withContext context: Any?) {
         super.awake(withContext: context)
         if WCSession.isSupported() {
             let session = WCSession.default()
@@ -43,7 +43,7 @@ class InterfaceController: WKInterfaceController,WCSessionDelegate {
         }
     }
 
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: NSError?) {
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
 
     }
 

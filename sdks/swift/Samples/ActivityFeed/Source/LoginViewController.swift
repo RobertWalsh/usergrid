@@ -49,8 +49,8 @@ class LoginViewController: UIViewController {
     }
 
     @IBAction func loginButtonTouched(_ sender: AnyObject) {
-        guard let username = usernameTextField.text where !username.isEmpty,
-              let password = passwordTextField.text where !password.isEmpty
+        guard let username = usernameTextField.text, !username.isEmpty,
+              let password = passwordTextField.text, !password.isEmpty
         else {
             self.showAlert("Error Authenticating User", message: "Username and password must not be empty.")
             return;

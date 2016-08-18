@@ -32,8 +32,8 @@ class AUTH_Tests: XCTestCase {
     var appAuth: UsergridAppAuth!
     var userAuth: UsergridUserAuth!
 
-    private static let collectionName = "publicevent"
-    private static let entityUUID = "fa015eaa-fe1c-11e3-b94b-63b29addea01"
+    fileprivate static let collectionName = "publicevent"
+    fileprivate static let entityUUID = "fa015eaa-fe1c-11e3-b94b-63b29addea01"
 
     override func setUp() {
         super.setUp()
@@ -49,7 +49,7 @@ class AUTH_Tests: XCTestCase {
 
     func test_CLIENT_AUTH() {
 
-        let authExpect = self.expectation(withDescription: "\(#function)")
+        let authExpect = self.expectation(description: "\(#function)")
         Usergrid.authMode = .app
         Usergrid.authenticateApp(appAuth) { auth,error in
             XCTAssertTrue(Thread.isMainThread)
@@ -73,7 +73,7 @@ class AUTH_Tests: XCTestCase {
                 }
             }
         }
-        self.waitForExpectations(withTimeout: 100, handler: nil)
+        self.waitForExpectations(timeout: 100, handler: nil)
     }
 
     func test_DESTROY_AUTH() {

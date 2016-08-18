@@ -355,7 +355,7 @@ public class Usergrid: NSObject {
     - parameter jsonBody:   The valid JSON body dictionary to update the `UsergridEntity` with.
     - parameter completion: The completion block that will be called once the request has completed.
     */
-    public static func PUT(_ type: String, uuidOrName: String, jsonBody:[String:AnyObject], completion: UsergridResponseCompletion? = nil) {
+    public static func PUT(_ type: String, uuidOrName: String, jsonBody:[String:Any], completion: UsergridResponseCompletion? = nil) {
         Usergrid.sharedInstance.PUT(type, uuidOrName: uuidOrName, jsonBody: jsonBody, completion: completion)
     }
 
@@ -368,7 +368,7 @@ public class Usergrid: NSObject {
     - parameter jsonBody:   The valid JSON body dictionary to update the `UsergridEntity` with.
     - parameter completion: The completion block that will be called once the request has completed.
     */
-    public static func PUT(_ type: String, jsonBody:[String:AnyObject], completion: UsergridResponseCompletion? = nil) {
+    public static func PUT(_ type: String, jsonBody:[String:Any], completion: UsergridResponseCompletion? = nil) {
         Usergrid.sharedInstance.PUT(type, jsonBody: jsonBody, completion: completion)
     }
 
@@ -391,7 +391,7 @@ public class Usergrid: NSObject {
     - parameter jsonBody:           The valid JSON body dictionary to update with.
     - parameter queryCompletion:    The completion block that will be called once the request has completed.
     */
-    public static func PUT(_ query: UsergridQuery, jsonBody:[String:AnyObject], queryCompletion: UsergridResponseCompletion? = nil) {
+    public static func PUT(_ query: UsergridQuery, jsonBody:[String:Any], queryCompletion: UsergridResponseCompletion? = nil) {
         Usergrid.sharedInstance.PUT(query, jsonBody: jsonBody, queryCompletion: queryCompletion)
     }
 
@@ -405,7 +405,7 @@ public class Usergrid: NSObject {
     - parameter jsonBody:   The valid JSON body dictionary to use when creating the `UsergridEntity`.
     - parameter completion: The completion block that will be called once the request has completed.
     */
-    public static func POST(_ type: String, name: String, jsonBody:[String:AnyObject], completion: UsergridResponseCompletion? = nil) {
+    public static func POST(_ type: String, name: String, jsonBody:[String:Any], completion: UsergridResponseCompletion? = nil) {
         Usergrid.sharedInstance.POST(type, name: name, jsonBody: jsonBody, completion: completion)
     }
 
@@ -416,7 +416,7 @@ public class Usergrid: NSObject {
     - parameter jsonBody:   The valid JSON body dictionary to use when creating the `UsergridEntity`.
     - parameter completion: The completion block that will be called once the request has completed.
     */
-    public static func POST(_ type: String, jsonBody:[String:AnyObject], completion: UsergridResponseCompletion? = nil) {
+    public static func POST(_ type: String, jsonBody:[String:Any], completion: UsergridResponseCompletion? = nil) {
         Usergrid.sharedInstance.POST(type, jsonBody: jsonBody, completion: completion)
     }
 
@@ -427,7 +427,7 @@ public class Usergrid: NSObject {
     - parameter jsonBody:   The valid JSON body dictionaries to use when creating the `UsergridEntity` objects.
     - parameter completion: The completion block that will be called once the request has completed.
     */
-    public static func POST(_ type: String, jsonBodies:[[String:AnyObject]], completion: UsergridResponseCompletion? = nil) {
+    public static func POST(_ type: String, jsonBodies:[[String:Any]], completion: UsergridResponseCompletion? = nil) {
         Usergrid.sharedInstance.POST(type, jsonBodies: jsonBodies, completion: completion)
     }
 

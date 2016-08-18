@@ -26,7 +26,7 @@
 
 import Foundation
 
-typealias UsergridAssetRequestWrapperCompletionBlock = (requestWrapper:UsergridAssetRequestWrapper) -> Void
+typealias UsergridAssetRequestWrapperCompletionBlock = (_ requestWrapper:UsergridAssetRequestWrapper) -> Void
 
 final class UsergridAssetRequestWrapper {
     weak var session: URLSession?

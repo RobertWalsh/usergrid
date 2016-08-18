@@ -34,9 +34,9 @@ import UsergridSDK
 
     var window: UIWindow?
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
 
-        UINavigationBar.appearance().tintColor = UIColor.white()
+        UINavigationBar.appearance().tintColor = UIColor.white
         application.registerUserNotificationSettings(UIUserNotificationSettings( types: [.alert, .badge, .sound], categories: nil))
         application.registerForRemoteNotifications()
 
@@ -58,7 +58,7 @@ import UsergridSDK
         Usergrid.applyPushToken(deviceToken, notifierID: UsergridManager.NOTIFIER_ID, completion: nil)
     }
 
-    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError) {
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("Application failed to register for remote notifications")
     }
 }

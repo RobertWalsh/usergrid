@@ -62,7 +62,7 @@ public class UsergridManager {
         let verb = "post"
         let content = text
 
-        var actorDictionary = [String:AnyObject]()
+        var actorDictionary = [String:Any]()
         actorDictionary["displayName"] = currentUser.name ?? currentUser.usernameOrEmail ?? ""
         actorDictionary["email"] = currentUser.email ?? ""
         if let imageURL = currentUser.picture {

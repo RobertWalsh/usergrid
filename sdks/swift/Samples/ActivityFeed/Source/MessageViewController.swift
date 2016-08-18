@@ -82,13 +82,13 @@ class MessageViewController : SLKTextViewController {
 
         self.textInputbar.autoHideRightButton = true
         self.textInputbar.maxCharCount = 256
-        self.textInputbar.editorTitle.textColor = UIColor.darkGray()
+        self.textInputbar.editorTitle.textColor = UIColor.darkGray
 
         self.tableView!.separatorStyle = .none
         self.tableView!.register(MessageTableViewCell.self, forCellReuseIdentifier:MessageViewController.MESSAGE_CELL_IDENTIFIER)
     }
 
-    override func didPressRightButton(_ sender: AnyObject!) {
+    override func didPressRightButton(_ sender: Any!) {
         self.textView.refreshFirstResponder()
 
         UsergridManager.postFeedMessage(self.textView.text) { (response) -> Void in
@@ -112,7 +112,7 @@ class MessageViewController : SLKTextViewController {
     }
 
     override func keyForTextCaching() -> String? {
-        return Bundle.main().bundleIdentifier
+        return Bundle.main.bundleIdentifier
     }
 
 
@@ -139,9 +139,9 @@ class MessageViewController : SLKTextViewController {
         cell.bodyLabel.text = feedEntity.content
         cell.thumbnailView.image = nil
 
-        if let imageURLString = feedEntity.imageURL, imageURL = URL(string: imageURLString) {
-            URLSession.shared().dataTask(with: imageURL) { (data, response, error) in
-                if let imageData = data, image = UIImage(data: imageData) {
+        if let imageURLString = feedEntity.imageURL, let imageURL = URL(string: imageURLString) {
+            URLSession.shared.dataTask(with: imageURL) { (data, response, error) in
+                if let imageData = data, let image = UIImage(data: imageData) {
                     DispatchQueue.main.async(execute: { () -> Void in
                         cell.thumbnailView.image = image
                     })
@@ -164,12 +164,12 @@ class MessageViewController : SLKTextViewController {
 
         let feedEntity = messageEntities[(indexPath as NSIndexPath).row]
 
-        guard let messageText = feedEntity.content where !messageText.isEmpty
+        guard let messageText = feedEntity.content, !messageText.isEmpty
         else {
                 return 0
         }
 
-        let messageUsername : NSString = feedEntity.displayName ?? ""
+        let messageUsername : NSString = (feedEntity.displayName ?? "") as NSString
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineBreakMode = .byWordWrapping
@@ -203,7 +203,7 @@ extension MessageViewController : WCSessionDelegate {
     }
 
     @available(iOS 9.3, *)
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: NSError?) {
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
 
     }
 
@@ -215,8 +215,8 @@ extension MessageViewController : WCSessionDelegate {
 
     }
 
-    func session(_ session: WCSession, didReceiveMessage message: [String : AnyObject], replyHandler: ([String : AnyObject]) -> Void) {
-        if let action = message["action"] as? String where action == "getMessages" {
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Swift.Void) {
+        if let action = message["action"] as? String, action == "getMessages" {
             UsergridManager.getFeedMessages { (response) -> Void in
                 if let entities = response.entities {
                     self.sendEntitiesToWatch(entities)
@@ -235,8 +235,8 @@ extension MessageViewController : WCSessionDelegate {
         }
     }
 
-    func session(_ session: WCSession, didReceiveMessage message: [String : AnyObject]) {
-        if let action = message["action"] as? String where action == "getMessages" {
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+        if let action = message["action"] as? String, action == "getMessages" {
             UsergridManager.getFeedMessages { (response) -> Void in
                 if let entities = response.entities {
                     self.sendEntitiesToWatch(entities)

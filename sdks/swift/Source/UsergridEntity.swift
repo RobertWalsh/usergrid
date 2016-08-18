@@ -32,16 +32,16 @@ import CoreLocation
 
 `UsergridEntity` maintains a set of accessor properties for standard Usergrid schema properties (e.g. name, uuid), and supports helper methods for accessing any custom properties that might exist.
 */
-public class UsergridEntity: NSObject, NSCoding {
+open class UsergridEntity: NSObject, NSCoding {
 
     static private var subclassMappings: [String:UsergridEntity.Type] = [UsergridUser.USER_ENTITY_TYPE:UsergridUser.self,UsergridDevice.DEVICE_ENTITY_TYPE:UsergridDevice.self]
 
     // MARK: - Instance Properties -
 
     /// The property dictionary that stores the properties values of the `UsergridEntity` object.
-    private var properties: [String : AnyObject] {
+    private var properties: [String : Any] {
         didSet {
-            if let fileMetaData = properties.removeValue(forKey: UsergridFileMetaData.FILE_METADATA) as? [String:AnyObject] {
+            if let fileMetaData = properties.removeValue(forKey: UsergridFileMetaData.FILE_METADATA) as? [String:Any] {
                 self.fileMetaData = UsergridFileMetaData(fileMetaDataJSON: fileMetaData)
             } else {
                 self.fileMetaData = nil
@@ -83,21 +83,21 @@ public class UsergridEntity: NSObject, NSCoding {
     public var isUser: Bool { return self is UsergridUser || self.type == UsergridUser.USER_ENTITY_TYPE }
 
     /// Tells you if there is an asset associated with this entity.
-    public var hasAsset: Bool { return self.asset != nil || self.fileMetaData?.contentLength > 0 }
+    public var hasAsset: Bool { return self.asset != nil || (self.fileMetaData?.contentLength ?? 0) > 0 }
 
     /// The JSON object value.
-    public var jsonObjectValue : [String:AnyObject] { return self.properties }
+    public var jsonObjectValue : [String:Any] { return self.properties }
 
     /// The string value.
     public var stringValue : String { return NSString(data: try! JSONSerialization.data(withJSONObject: self.jsonObjectValue, options: .prettyPrinted), encoding: String.Encoding.utf8.rawValue) as! String }
 
     /// The description.
-    public override var description : String {
+    open override var description : String {
         return "Properties of Entity: \(stringValue)."
     }
 
     /// The debug description.
-    public override var debugDescription : String {
+    open override var debugDescription : String {
         return "Properties of Entity: \(stringValue)."
     }
 
@@ -112,7 +112,7 @@ public class UsergridEntity: NSObject, NSCoding {
 
     - returns: A new `UsergridEntity` object.
     */
-    required public init(type:String, name:String? = nil, propertyDict:[String:AnyObject]? = nil) {
+    required public init(type:String, name:String? = nil, propertyDict:[String:Any]? = nil) {
         self.properties = propertyDict ?? [:]
         super.init()
 
@@ -128,7 +128,7 @@ public class UsergridEntity: NSObject, NSCoding {
             self.properties[UsergridEntityProperties.name.stringValue] = entityName
         }
 
-        if let fileMetaData = self.properties.removeValue(forKey: UsergridFileMetaData.FILE_METADATA) as? [String:AnyObject] {
+        if let fileMetaData = self.properties.removeValue(forKey: UsergridFileMetaData.FILE_METADATA) as? [String:Any] {
             self.fileMetaData = UsergridFileMetaData(fileMetaDataJSON: fileMetaData)
         }
     }
@@ -154,7 +154,7 @@ public class UsergridEntity: NSObject, NSCoding {
 
     - returns: A `UsergridEntity` object provided that the `type` key within the dictionay exists. Otherwise nil.
     */
-    public class func entity(jsonDict: [String:AnyObject]) -> UsergridEntity? {
+    public class func entity(jsonDict: [String:Any]) -> UsergridEntity? {
         guard let type = jsonDict[UsergridEntityProperties.type.stringValue] as? String
             else {
                 return nil
@@ -171,7 +171,7 @@ public class UsergridEntity: NSObject, NSCoding {
 
     - returns: An array of `UsergridEntity`.
     */
-    public class func entities(jsonArray entitiesJSONArray: [[String:AnyObject]]) -> [UsergridEntity] {
+    public class func entities(jsonArray entitiesJSONArray: [[String:Any]]) -> [UsergridEntity] {
         var entityArray : [UsergridEntity] = []
         for entityJSONDict in entitiesJSONArray {
             if let entity = UsergridEntity.entity(jsonDict:entityJSONDict) {
@@ -191,7 +191,7 @@ public class UsergridEntity: NSObject, NSCoding {
     - returns: A decoded `UsergridUser` object.
     */
     required public init?(coder aDecoder: NSCoder) {
-        guard let properties = aDecoder.decodeObject(forKey: "properties") as? [String:AnyObject]
+        guard let properties = aDecoder.decodeObject(forKey: "properties") as? [String:Any]
             else {
                 self.properties = [:]
                 super.init()
@@ -208,7 +208,7 @@ public class UsergridEntity: NSObject, NSCoding {
 
      - parameter aCoder: The encoder.
      */
-    public func encode(with aCoder: NSCoder) {
+    open func encode(with aCoder: NSCoder) {
         aCoder.encode(self.properties, forKey: "properties")
         aCoder.encode(self.fileMetaData, forKey: "fileMetaData")
         aCoder.encode(self.asset, forKey: "asset")
@@ -225,13 +225,13 @@ public class UsergridEntity: NSObject, NSCoding {
         usergridEntity["propertyName"] = propertyValue
         ```
     */
-    public subscript(propertyName: String) -> AnyObject? {
+    public subscript(propertyName: String) -> Any? {
         get {
             if let entityProperty = UsergridEntityProperties.fromString(propertyName) {
                 return self.getEntitySpecificProperty(entityProperty)
             } else {
                 let propertyValue = self.properties[propertyName]
-                if propertyValue === NSNull() { // Let's just return nil for properties that have been removed instead of NSNull
+                if propertyValue is NSNull { // Let's just return nil for properties that have been removed instead of NSNull
                     return nil
                 } else {
                     return propertyValue
@@ -250,7 +250,7 @@ public class UsergridEntity: NSObject, NSCoding {
                                 properties[propertyName] = [ENTITY_LATITUDE:location.latitude,
                                                             ENTITY_LONGITUDE:location.longitude]
                             } else if let location = value as? [String:Double] {
-                                if let lat = location[ENTITY_LATITUDE], long = location[ENTITY_LONGITUDE] {
+                                if let lat = location[ENTITY_LATITUDE], let long = location[ENTITY_LONGITUDE] {
                                     properties[propertyName] = [ENTITY_LATITUDE:lat,
                                                                 ENTITY_LONGITUDE:long]
                                 }
@@ -282,7 +282,7 @@ public class UsergridEntity: NSObject, NSCoding {
     - parameter name:  The name of the property.
     - parameter value: The value to update to.
     */
-    public func putProperty(_ name:String,value:AnyObject?) {
+    public func putProperty(_ name:String,value:Any?) {
         self[name] = value
     }
 
@@ -291,7 +291,7 @@ public class UsergridEntity: NSObject, NSCoding {
 
     - parameter properties: The property dictionary containing the properties names and values.
     */
-    public func putProperties(_ properties:[String:AnyObject]) {
+    public func putProperties(_ properties:[String:Any]) {
         for (name,value) in properties {
             self.putProperty(name, value: value)
         }
@@ -323,8 +323,8 @@ public class UsergridEntity: NSObject, NSCoding {
     - parameter name:  The name of the property.
      - parameter value: The value or an array of values to append.
     */
-    public func append(_ name:String, value:AnyObject) {
-        self.insertArray(name, values:value as? [AnyObject] ?? [value], index: Int.max)
+    public func append(_ name:String, value:Any) {
+        self.insertArray(name, values:value as? [Any] ?? [value], index: Int.max)
     }
 
     /**
@@ -334,8 +334,8 @@ public class UsergridEntity: NSObject, NSCoding {
     - parameter index: The index to insert at.
     - parameter value: The value or an array of values to insert.
     */
-    public func insert(_ name:String, value:AnyObject, index:Int = 0) {
-        self.insertArray(name, values:value as? [AnyObject] ?? [value], index: index)
+    public func insert(_ name:String, value:Any, index:Int = 0) {
+        self.insertArray(name, values:value as? [Any] ?? [value], index: index)
     }
 
     /**
@@ -345,9 +345,9 @@ public class UsergridEntity: NSObject, NSCoding {
     - parameter index:  The index to insert at.
     - parameter values: The values to insert.
     */
-    private func insertArray(_ name:String,values:[AnyObject], index:Int = 0) {
+    private func insertArray(_ name:String,values:[Any], index:Int = 0) {
         if let propertyValue = self[name] {
-            if let arrayValue = propertyValue as? [AnyObject] {
+            if let arrayValue = propertyValue as? [Any] {
                 var arrayOfValues = arrayValue
                 if  index > arrayValue.count {
                     arrayOfValues.append(contentsOf: values)
@@ -373,7 +373,7 @@ public class UsergridEntity: NSObject, NSCoding {
     - parameter name: The name of the property.
     */
     public func pop(_ name:String) {
-        if let arrayValue = self[name] as? [AnyObject] where arrayValue.count > 0 {
+        if let arrayValue = self[name] as? [Any] , arrayValue.count > 0 {
             var arrayOfValues = arrayValue
             arrayOfValues.removeLast()
             self[name] = arrayOfValues
@@ -386,15 +386,15 @@ public class UsergridEntity: NSObject, NSCoding {
     - parameter name: The name of the property.
     */
     public func shift(_ name:String) {
-        if let arrayValue = self[name] as? [AnyObject] where arrayValue.count > 0 {
+        if let arrayValue = self[name] as? [Any] , arrayValue.count > 0 {
             var arrayOfValues = arrayValue
             arrayOfValues.removeFirst()
             self[name] = arrayOfValues
         }
     }
 
-    private func getEntitySpecificProperty(_ entityProperty: UsergridEntityProperties) -> AnyObject? {
-        var propertyValue: AnyObject? = nil
+    private func getEntitySpecificProperty(_ entityProperty: UsergridEntityProperties) -> Any? {
+        var propertyValue: Any? = nil
         switch entityProperty {
             case .uuid,.type,.name :
                 propertyValue = self.properties[entityProperty.stringValue]
@@ -403,7 +403,7 @@ public class UsergridEntity: NSObject, NSCoding {
                     propertyValue = Date(milliseconds: milliseconds.description)
                 }
             case .location :
-                if let locationDict = self.properties[entityProperty.stringValue] as? [String:Double], lat = locationDict[ENTITY_LATITUDE], long = locationDict[ENTITY_LONGITUDE] {
+                if let locationDict = self.properties[entityProperty.stringValue] as? [String:Double], let lat = locationDict[ENTITY_LATITUDE], let long = locationDict[ENTITY_LONGITUDE] {
                     propertyValue = CLLocation(latitude: lat, longitude: long)
                 }
             }
@@ -430,7 +430,7 @@ public class UsergridEntity: NSObject, NSCoding {
     public func reload(_ client:UsergridClient, completion: UsergridResponseCompletion? = nil) {
         guard let uuidOrName = self.uuidOrName
             else {
-                completion?(response: UsergridResponse(client: client, errorName: "Entity cannot be reloaded.", errorDescription: "Entity has neither an UUID or name specified."))
+                completion?(UsergridResponse(client: client, errorName: "Entity cannot be reloaded.", errorDescription: "Entity has neither an UUID or name specified."))
                 return
         }
 
@@ -438,7 +438,7 @@ public class UsergridEntity: NSObject, NSCoding {
             if let responseEntity = response.entity {
                 self.copyInternalsFromEntity(responseEntity)
             }
-            completion?(response: response)
+            completion?(response)
         }
     }
 
@@ -463,14 +463,14 @@ public class UsergridEntity: NSObject, NSCoding {
                 if let responseEntity = response.entity {
                     self.copyInternalsFromEntity(responseEntity)
                 }
-                completion?(response: response)
+                completion?(response)
             }
         } else {
             client.POST(self) { response in
                 if let responseEntity = response.entity {
                     self.copyInternalsFromEntity(responseEntity)
                 }
-                completion?(response: response)
+                completion?(response)
             }
         }
     }

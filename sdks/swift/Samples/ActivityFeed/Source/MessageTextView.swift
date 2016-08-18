@@ -30,8 +30,8 @@ import SlackTextViewController
 class MessageTextView : SLKTextView {
     override func willMove(toSuperview newSuperview: UIView?) {
         super.willMove(toSuperview: newSuperview)
-        self.backgroundColor = UIColor.white()
-        self.placeholderColor = UIColor.lightGray()
+        self.backgroundColor = UIColor.white
+        self.placeholderColor = UIColor.lightGray
         self.placeholder = "Message"
         self.pastableMediaTypes = []
         self.layer.borderColor = UIColor(red: 217/255, green: 217/255, blue: 217/255, alpha: 1.0).cgColor

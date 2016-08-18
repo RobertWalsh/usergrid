@@ -34,8 +34,8 @@ class User_Tests: XCTestCase {
 
     static let name = "Robert Walsh"
     static let age = 29
-    static let email = "handsomeRob741@yahoo.com"
-    static let username = "rwalsh"
+    static let email = "handsomeRob741www@yahoo.com"
+    static let username = "rwalshwww"
     static let password = "password"
     static let resetPassword = "password111"
     static let picture = "http://www.gravatar.com/avatar/e466d447df831ddce35fbc50763fb03a"
@@ -52,7 +52,7 @@ class User_Tests: XCTestCase {
         user = UsergridUser(name:"a_bogus_name", email:User_Tests.email, username:User_Tests.username, password:User_Tests.password)
         user.name = User_Tests.name
         user.password = User_Tests.password
-        user.age = User_Tests.age
+        user.age = User_Tests.age as NSNumber
         user.location = CLLocation(latitude: -90, longitude: 100)
         user.picture = User_Tests.picture
         user.activated = User_Tests.activated
@@ -136,7 +136,7 @@ class User_Tests: XCTestCase {
         XCTAssertNil(user.uuid)
 
         XCTAssertEqual(user.name!, User_Tests.name)
-        XCTAssertEqual(user.age!, User_Tests.age)
+        XCTAssertEqual(user.age!, User_Tests.age as NSNumber)
         XCTAssertEqual(user.username!, User_Tests.username)
         XCTAssertEqual(user.email!, User_Tests.email)
         XCTAssertEqual(user.password!, User_Tests.password)
@@ -169,7 +169,7 @@ class User_Tests: XCTestCase {
     }
 
     func test_CREATE_AND_DELETE_USER() {
-        let userExpect = self.expectation(withDescription: "\(#function)")
+        let userExpect = self.expectation(description: "\(#function)")
 
         user.save() { (createResponse) in
             XCTAssertTrue(Thread.isMainThread)
@@ -185,7 +185,7 @@ class User_Tests: XCTestCase {
                 XCTAssertNotNil(createdUser.modified)
                 XCTAssertNotNil(createdUser.location)
                 XCTAssertEqual(createdUser.name!, User_Tests.name)
-                XCTAssertEqual(createdUser.age!, User_Tests.age)
+                XCTAssertEqual(createdUser.age!.intValue, User_Tests.age)
                 XCTAssertEqual(createdUser.username!, User_Tests.username)
                 XCTAssertEqual(createdUser.email!, User_Tests.email)
                 XCTAssertEqual(createdUser.picture!, User_Tests.picture)
@@ -196,11 +196,11 @@ class User_Tests: XCTestCase {
                 self.deleteUser(userExpect)
             }
         }
-        self.waitForExpectations(withTimeout: 100, handler: nil)
+        self.waitForExpectations(timeout: 100, handler: nil)
     }
 
     func test_AUTHENTICATE_USER() {
-        let userExpect = self.expectation(withDescription: "\(#function)")
+        let userExpect = self.expectation(description: "\(#function)")
 
         UsergridUser.checkAvailable(user.email, username: user.username) { error,available in
 
@@ -257,11 +257,11 @@ class User_Tests: XCTestCase {
                 }
             }
         }
-        self.waitForExpectations(withTimeout: 100, handler: nil)
+        self.waitForExpectations(timeout: 100, handler: nil)
     }
 
     func test_RESET_USER_PASSWORD() {
-        let userExpect = self.expectation(withDescription: "\(#function)")
+        let userExpect = self.expectation(description: "\(#function)")
 
         user.create() { (createResponse) in
             XCTAssertTrue(Thread.isMainThread)
@@ -295,11 +295,11 @@ class User_Tests: XCTestCase {
                 }
             }
         }
-        self.waitForExpectations(withTimeout: 100, handler: nil)
+        self.waitForExpectations(timeout: 100, handler: nil)
     }
 
     func test_DEVICE_CONNECTION() {
-        let userExpect = self.expectation(withDescription: "\(#function)")
+        let userExpect = self.expectation(description: "\(#function)")
 
         user.create() { createResponse in
             XCTAssertNotNil(createResponse)
@@ -333,11 +333,11 @@ class User_Tests: XCTestCase {
                 }
             }
         }
-        self.waitForExpectations(withTimeout: 100, handler: nil)
+        self.waitForExpectations(timeout: 100, handler: nil)
     }
 
     func test_DEVICE_CONNECT_FAIL() {
-        let userExpect = self.expectation(withDescription: "\(#function)")
+        let userExpect = self.expectation(description: "\(#function)")
 
         user.create() { createResponse in
             XCTAssertNotNil(createResponse)
@@ -371,7 +371,7 @@ class User_Tests: XCTestCase {
                 }
             }
         }
-        self.waitForExpectations(withTimeout: 100, handler: nil)
+        self.waitForExpectations(timeout: 100, handler: nil)
     }
 
 

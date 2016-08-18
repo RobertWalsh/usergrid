@@ -36,10 +36,10 @@ class RegisterViewController: UIViewController {
     @IBOutlet weak var passwordTextField: UITextField!
 
     @IBAction func registerButtonTouched(_ sender: AnyObject) {
-        guard let name = nameTextField.text where !name.isEmpty,
-              let username = usernameTextField.text where !username.isEmpty,
-              let email = emailTextField.text where !email.isEmpty,
-              let password = passwordTextField.text where !password.isEmpty
+        guard let name = nameTextField.text, !name.isEmpty,
+              let username = usernameTextField.text, !username.isEmpty,
+              let email = emailTextField.text, !email.isEmpty,
+              let password = passwordTextField.text, !password.isEmpty
         else {
             self.showAlert("Error Registering User", message: "Name, username, email, and password fields must not be empty.")
             return;

@@ -45,7 +45,7 @@ public class ActivityEntity: UsergridEntity {
         UsergridEntity.mapCustomType("activity", toSubclass: ActivityEntity.self)
     }
 
-    required public init(type: String, name: String?, propertyDict: [String : AnyObject]?) {
+    required public init(type: String, name: String?, propertyDict: [String : Any]?) {
         super.init(type: type, name: name, propertyDict: propertyDict)
     }
 
@@ -53,7 +53,7 @@ public class ActivityEntity: UsergridEntity {
         super.init(coder: aDecoder)
     }
 
-    public override func encode(with aCoder: NSCoder) {
+    open override func encode(with aCoder: NSCoder) {
         super.encode(with:aCoder)
     }
     

@@ -27,10 +27,10 @@
 import Foundation
 
 /// The completion block used in `UsergridAppAuth` authentication methods.
-public typealias UsergridAppAuthCompletionBlock = (auth:UsergridAppAuth?, error: UsergridResponseError?) -> Void
+public typealias UsergridAppAuthCompletionBlock = (_ auth:UsergridAppAuth?, _ error: UsergridResponseError?) -> Void
 
 /// The completion block used in `UsergridUserAuth` authentication methods.
-public typealias UsergridUserAuthCompletionBlock = (auth:UsergridUserAuth?, user:UsergridUser?, error: UsergridResponseError?) -> Void
+public typealias UsergridUserAuthCompletionBlock = (_ auth:UsergridUserAuth?, _ user:UsergridUser?, _ error: UsergridResponseError?) -> Void
 
 /** 
  The `UsergridAuth` class functions to create and store authentication information used by Usergrid.
@@ -68,7 +68,7 @@ public class UsergridAuth : NSObject, NSCoding {
     }
 
     /// The credentials dictionary. Subclasses must override this method and provide an actual dictionary containing the credentials to send with requests.
-    var credentialsJSONDict: [String:AnyObject] {
+    var credentialsJSONDict: [String:Any] {
         return [:]
     }
 
@@ -79,7 +79,7 @@ public class UsergridAuth : NSObject, NSCoding {
 
     - returns: A new instance of `UsergridAuth`.
     */
-    override private init() {
+    override fileprivate init() {
         super.init()
     }
 
@@ -148,7 +148,7 @@ public class UsergridUserAuth : UsergridAuth {
     private let password: String
 
     /// The credentials dictionary constructed with the `UsergridUserAuth`'s `username` and `password`.
-    override var credentialsJSONDict: [String:AnyObject] {
+    override var credentialsJSONDict: [String:Any] {
         return ["grant_type":"password",
                 "username":self.username,
                 "password":self.password]
@@ -181,7 +181,7 @@ public class UsergridUserAuth : UsergridAuth {
     */
     required public init?(coder aDecoder: NSCoder) {
         guard let username = aDecoder.decodeObject(forKey: "username") as? String,
-                  password = aDecoder.decodeObject(forKey: "password") as? String
+                  let password = aDecoder.decodeObject(forKey: "password") as? String
         else {
             self.username = ""
             self.password = ""
@@ -218,7 +218,7 @@ public class UsergridAppAuth : UsergridAuth {
     private let clientSecret: String
 
     /// The credentials dictionary constructed with the `UsergridAppAuth`'s `clientId` and `clientSecret`.
-    override var credentialsJSONDict: [String:AnyObject] {
+    override var credentialsJSONDict: [String:Any] {
         return ["grant_type":"client_credentials",
                 "client_id":self.clientId,
                 "client_secret":self.clientSecret]
