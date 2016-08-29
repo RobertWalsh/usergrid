@@ -31,21 +31,16 @@
   ];
   Usergrid.Client = function(options) {
     //usergrid endpoint
-    this.URI = options.URI || 'https://api.usergrid.com';
+    this.baseUrl = options.baseUrl || 'https://api.usergrid.com';
 
-    //Find your Orgname and Appname in the Admin portal (http://apigee.com/usergrid)
-    if (options.orgName) {
-      this.set('orgName', options.orgName);
+    //Find your orgId and appId in the Admin portal (http://apigee.com/usergrid)
+    if (options.orgId) {
+      this.set('orgId', options.orgId);
     }
-    if (options.appName) {
-      this.set('appName', options.appName);
+    if (options.appId) {
+      this.set('appId', options.appId);
     }
-    if (options.anything) {
-      this.set('appName', options.appName);
-    }
-    if (options.qs) {
-      this.setObject('default_qs', options.qs);
-    }
+
     //other options
     this.buildCurl = options.buildCurl || false;
     this.logging = options.logging || false;
@@ -77,8 +72,8 @@
     var body = options.body || {};
     var qs = options.qs || {};
     var mQuery = options.mQuery || false; //is this a query to the management endpoint?
-    var orgName = this.get('orgName');
-    var appName = this.get('appName');
+    var orgId = this.get('orgId');
+    var appId = this.get('appId');
     var default_qs = this.getObject('default_qs');
     var uri;
     /*var logoutCallback=function(){
@@ -86,13 +81,13 @@
             return this.logoutCallback(true, 'no_org_or_app_name_specified');
         }
     }.bind(this);*/
-    if (!mQuery && !orgName && !appName) {
+    if (!mQuery && !orgId && !appId) {
       return logoutCallback();
     }
     if (mQuery) {
-      uri = this.URI + '/' + endpoint;
+      uri = this.baseUrl + '/' + endpoint;
     } else {
-      uri = this.URI + '/' + orgName + '/' + appName + '/' + endpoint;
+      uri = this.baseUrl + '/' + orgId + '/' + appId + '/' + endpoint;
     }
     if (this.getToken()) {
       qs.access_token = this.getToken();
@@ -131,7 +126,7 @@
   Usergrid.Client.prototype.buildAssetURL = function(uuid) {
     var self = this;
     var qs = {};
-    var assetURL = this.URI + '/' + this.orgName + '/' + this.appName + '/assets/' + uuid + '/data';
+    var assetURL = this.baseUrl + '/' + this.orgId + '/' + this.appId + '/assets/' + uuid + '/data';
 
     if (self.getToken()) {
       qs.access_token = self.getToken();
@@ -649,9 +644,9 @@
         var org = '';
         try {
           //if we have an org stored, then use that one. Otherwise, use the first one.
-          var existingOrg = self.get('orgName');
+          var existingOrg = self.get('orgId');
           org = (organizations[existingOrg]) ? organizations[existingOrg] : organizations[Object.keys(organizations)[0]];
-          self.set('orgName', org.name);
+          self.set('orgId', org.name);
         } catch (e) {
           err = true;
           if (self.logging) {

@@ -31,8 +31,8 @@ $(document).ready(function () {
   var logNotice = true;
 
   var client = new Usergrid.Client({
-    orgName:'yourorgname',
-    appName:'sandbox',
+    orgId:'yourorgname',
+    appId:'sandbox',
     logging: true, //optional - turn on logging, off by default
     buildCurl: true //optional - turn on curl commands, off by default
   });

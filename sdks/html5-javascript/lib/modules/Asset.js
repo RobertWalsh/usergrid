@@ -131,11 +131,11 @@ Usergrid.Entity.prototype.attachAsset = function (file, callback) {
     }
 
     if(type != 'assets' && type != 'asset') {        
-        var endpoint = [ this._client.URI, this._client.orgName, this._client.appName, type, self.get("uuid") ].join("/");            
+        var endpoint = [ this._client.URI, this._client.orgId, this._client.appId, type, self.get("uuid") ].join("/");
     } else {
         self.set("content-type", file.type);
         self.set("size", file.size);
-        var endpoint = [ this._client.URI, this._client.orgName, this._client.appName, "assets", self.get("uuid"), "data" ].join("/");    
+        var endpoint = [ this._client.URI, this._client.orgId, this._client.appId, "assets", self.get("uuid"), "data" ].join("/");
     }
 
     var xhr = new XMLHttpRequest();
@@ -203,9 +203,9 @@ Usergrid.Entity.prototype.downloadAsset = function(callback) {
 
     var xhr = new XMLHttpRequest();
     if(type != "assets" && type != 'asset') {
-        endpoint = [ this._client.URI, this._client.orgName, this._client.appName, type, self.get("uuid") ].join("/");     
+        endpoint = [ this._client.URI, this._client.orgId, this._client.appId, type, self.get("uuid") ].join("/");
     } else {        
-        endpoint = [ this._client.URI, this._client.orgName, this._client.appName, "assets", self.get("uuid"), "data" ].join("/");        
+        endpoint = [ this._client.URI, this._client.orgId, this._client.appId, "assets", self.get("uuid"), "data" ].join("/");
     }
     xhr.open("GET", endpoint, true);
     xhr.responseType = "blob";

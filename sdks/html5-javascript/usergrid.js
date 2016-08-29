@@ -17,7 +17,7 @@
  *under the License.
  * 
  * 
- * usergrid@0.11.0 2016-08-26 
+ * usergrid@0.11.0 2016-08-29 
  */
 var UsergridEventable = function() {
     throw Error("'UsergridEventable' is not intended to be invoked directly");
@@ -565,18 +565,12 @@ function doCallback(callback, params, context) {
     var name = "Client", global = this, overwrittenName = global[name], exports;
     var AUTH_ERRORS = [ "auth_expired_session_token", "auth_missing_credentials", "auth_unverified_oath", "expired_token", "unauthorized", "auth_invalid" ];
     Usergrid.Client = function(options) {
-        this.URI = options.URI || "https://api.usergrid.com";
-        if (options.orgName) {
-            this.set("orgName", options.orgName);
+        this.baseUrl = options.baseUrl || "https://api.usergrid.com";
+        if (options.orgId) {
+            this.set("orgId", options.orgId);
         }
-        if (options.appName) {
-            this.set("appName", options.appName);
-        }
-        if (options.anything) {
-            this.set("appName", options.appName);
-        }
-        if (options.qs) {
-            this.setObject("default_qs", options.qs);
+        if (options.appId) {
+            this.set("appId", options.appId);
         }
         this.buildCurl = options.buildCurl || false;
         this.logging = options.logging || false;
@@ -604,8 +598,8 @@ function doCallback(callback, params, context) {
         var body = options.body || {};
         var qs = options.qs || {};
         var mQuery = options.mQuery || false;
-        var orgName = this.get("orgName");
-        var appName = this.get("appName");
+        var orgId = this.get("orgId");
+        var appId = this.get("appId");
         var default_qs = this.getObject("default_qs");
         var uri;
         /*var logoutCallback=function(){
@@ -613,13 +607,13 @@ function doCallback(callback, params, context) {
             return this.logoutCallback(true, 'no_org_or_app_name_specified');
         }
     }.bind(this);*/
-        if (!mQuery && !orgName && !appName) {
+        if (!mQuery && !orgId && !appId) {
             return logoutCallback();
         }
         if (mQuery) {
-            uri = this.URI + "/" + endpoint;
+            uri = this.baseUrl + "/" + endpoint;
         } else {
-            uri = this.URI + "/" + orgName + "/" + appName + "/" + endpoint;
+            uri = this.baseUrl + "/" + orgId + "/" + appId + "/" + endpoint;
         }
         if (this.getToken()) {
             qs.access_token = this.getToken();
@@ -650,7 +644,7 @@ function doCallback(callback, params, context) {
     Usergrid.Client.prototype.buildAssetURL = function(uuid) {
         var self = this;
         var qs = {};
-        var assetURL = this.URI + "/" + this.orgName + "/" + this.appName + "/assets/" + uuid + "/data";
+        var assetURL = this.baseUrl + "/" + this.orgId + "/" + this.appId + "/assets/" + uuid + "/data";
         if (self.getToken()) {
             qs.access_token = self.getToken();
         }
@@ -1128,9 +1122,9 @@ function doCallback(callback, params, context) {
                 organizations = data.organizations;
                 var org = "";
                 try {
-                    var existingOrg = self.get("orgName");
+                    var existingOrg = self.get("orgId");
                     org = organizations[existingOrg] ? organizations[existingOrg] : organizations[Object.keys(organizations)[0]];
-                    self.set("orgName", org.name);
+                    self.set("orgId", org.name);
                 } catch (e) {
                     err = true;
                     if (self.logging) {
@@ -3080,11 +3074,11 @@ Usergrid.Entity.prototype.attachAsset = function(file, callback) {
         attempts = 3;
     }
     if (type != "assets" && type != "asset") {
-        var endpoint = [ this._client.URI, this._client.orgName, this._client.appName, type, self.get("uuid") ].join("/");
+        var endpoint = [ this._client.URI, this._client.orgId, this._client.appId, type, self.get("uuid") ].join("/");
     } else {
         self.set("content-type", file.type);
         self.set("size", file.size);
-        var endpoint = [ this._client.URI, this._client.orgName, this._client.appName, "assets", self.get("uuid"), "data" ].join("/");
+        var endpoint = [ this._client.URI, this._client.orgId, this._client.appId, "assets", self.get("uuid"), "data" ].join("/");
     }
     var xhr = new XMLHttpRequest();
     xhr.open("POST", endpoint, true);
@@ -3149,9 +3143,9 @@ Usergrid.Entity.prototype.downloadAsset = function(callback) {
     var type = this._data.type;
     var xhr = new XMLHttpRequest();
     if (type != "assets" && type != "asset") {
-        endpoint = [ this._client.URI, this._client.orgName, this._client.appName, type, self.get("uuid") ].join("/");
+        endpoint = [ this._client.URI, this._client.orgId, this._client.appId, type, self.get("uuid") ].join("/");
     } else {
-        endpoint = [ this._client.URI, this._client.orgName, this._client.appName, "assets", self.get("uuid"), "data" ].join("/");
+        endpoint = [ this._client.URI, this._client.orgId, this._client.appId, "assets", self.get("uuid"), "data" ].join("/");
     }
     xhr.open("GET", endpoint, true);
     xhr.responseType = "blob";

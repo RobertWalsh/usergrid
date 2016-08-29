@@ -21,8 +21,8 @@
  */
 function getClient() {
 	return new Usergrid.Client({
-		orgName: 'yourorgname',
-		appName: 'sandbox',
+		orgId: 'rwalsh',
+		appId: 'sandbox',
 		logging: false, //optional - turn on logging, off by default
 		buildCurl: true //optional - turn on curl commands, off by default
 	});
@@ -201,8 +201,8 @@ describe('Usergrid', function(){
             it('should persist default query parameters', function(done) {
                 //create new client with default params
                 var client=new Usergrid.Client({
-                    orgName: 'yourorgname',
-                    appName: 'sandbox',
+                    orgId: 'yourorgname',
+                    appId: 'sandbox',
                     logging: false, //optional - turn on logging, off by default
                     buildCurl: true, //optional - turn on curl commands, off by default
                     qs:{
