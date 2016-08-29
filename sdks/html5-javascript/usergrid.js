@@ -1,20 +1,23 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*! 
+ *Licensed to the Apache Software Foundation (ASF) under one
+ *or more contributor license agreements.  See the NOTICE file
+ *distributed with this work for additional information
+ *regarding copyright ownership.  The ASF licenses this file
+ *to you under the Apache License, Version 2.0 (the
+ *"License"); you may not use this file except in compliance
+ *with the License.  You may obtain a copy of the License at
  *
  *  http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ *Unless required by applicable law or agreed to in writing,
+ *software distributed under the License is distributed on an
+ *"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *KIND, either express or implied.  See the License for the
+ *specific language governing permissions and limitations
+ *under the License.
+ * 
+ * 
+ * usergrid@0.11.0 2016-08-26 
  */
 var UsergridEventable = function() {
     throw Error("'UsergridEventable' is not intended to be invoked directly");
@@ -72,7 +75,7 @@ UsergridEventable.mixin = function(destObject) {
         return Logger.prototype.log.bind(this, method);
     };
     Logger.prototype.prefix = function(method, args) {
-        var prepend = "[" + method.toUpperCase() + "][" + name + "]:	";
+        var prepend = "[" + method.toUpperCase() + "][" + name + "]:\t";
         if ([ "log", "error", "warn", "info" ].indexOf(method) !== -1) {
             if ("string" === typeof args[0]) {
                 args[0] = prepend + args[0];
@@ -266,27 +269,22 @@ UsergridEventable.mixin = function(destObject) {
 })();
 
 /*
- *  This module is a collection of classes designed to make working with
- *  the Appigee App Services API as easy as possible.
- *  Learn more at http://Usergrid.com/docs/usergrid
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *   Copyright 2012 Usergrid Corporation
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- *  @author rod simpson (rod@Usergrid.com)
- *  @author matt dobson (matt@Usergrid.com)
- *  @author ryan bridges (rbridges@Usergrid.com)
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 window.console = window.console || {};
 
@@ -574,11 +572,15 @@ function doCallback(callback, params, context) {
         if (options.appName) {
             this.set("appName", options.appName);
         }
+        if (options.anything) {
+            this.set("appName", options.appName);
+        }
         if (options.qs) {
             this.setObject("default_qs", options.qs);
         }
         this.buildCurl = options.buildCurl || false;
         this.logging = options.logging || false;
+        console.log(this);
     };
     /*
    *  Main function for making requests to the API.  Can be called directly.
@@ -1037,6 +1039,33 @@ function doCallback(callback, params, context) {
             var user = {};
             if (err) {
                 if (self.logging) console.log("error trying to log user in");
+            } else {
+                var options = {
+                    client: self,
+                    data: response.user
+                };
+                user = new Usergrid.Entity(options);
+                self.setToken(response.access_token);
+            }
+            doCallback(callback, [ err, response, user ]);
+        });
+    };
+    Usergrid.Client.prototype.adminlogin = function(username, password, callback) {
+        var self = this;
+        var options = {
+            method: "POST",
+            endpoint: "management/token",
+            body: {
+                username: username,
+                password: password,
+                grant_type: "password"
+            },
+            mQuery: true
+        };
+        self.request(options, function(err, response) {
+            var user = {};
+            if (err) {
+                if (self.logging) console.log("error trying to log adminuser in");
             } else {
                 var options = {
                     client: self,

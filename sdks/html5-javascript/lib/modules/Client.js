@@ -40,6 +40,9 @@
     if (options.appName) {
       this.set('appName', options.appName);
     }
+    if (options.anything) {
+      this.set('appName', options.appName);
+    }
     if (options.qs) {
       this.setObject('default_qs', options.qs);
     }
@@ -47,6 +50,7 @@
     this.buildCurl = options.buildCurl || false;
     this.logging = options.logging || false;
 
+    console.log(this);
     //timeout and callbacks
     // this.logoutCallback =  options.logoutCallback || null;
   };
